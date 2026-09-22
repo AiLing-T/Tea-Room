@@ -1,0 +1,2961 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f2529">
+<title>Чайна зала</title>
+<style>
+:root{
+  --bg:#0f2529;--bg2:#153238;--line:#2c5359;--text:#e8efe9;--dim:#9db8b0;
+  --jade:#a9d6c0;--lac:#b3283c;--paper:#eee7d5;--ink:#2b2219;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:linear-gradient(180deg,#10282d,#0b1d21);color:var(--text);font:16px/1.45 var(--sans);min-height:100vh;min-height:100dvh}
+body.lock{overflow:hidden}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+[hidden]{display:none!important}
+.screen{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh}
+
+/* кнопки */
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:14px 16px;background:var(--jade);color:#0d2226;font-weight:700;font-size:17px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* чіпи */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{--cbg:rgba(169,214,192,.12);--cbd:rgba(169,214,192,.35);--cfg:var(--text);
+  display:inline-block;padding:3px 10px;border-radius:999px;background:var(--cbg);border:1px solid var(--cbd);color:var(--cfg);font-size:14px;line-height:1.5}
+.chip.hid{border-style:dashed;letter-spacing:.12em}
+.chip.flip{animation:flip .5s}
+@keyframes flip{0%{transform:rotateX(90deg);opacity:0}100%{transform:none;opacity:1}}
+
+/* назва */
+.title-screen{display:flex;flex-direction:column;justify-content:center;padding:32px 22px calc(28px + env(safe-area-inset-bottom));gap:26px}
+.fan{position:relative;height:150px;margin:0 auto;width:220px}
+.fan .card{position:absolute;bottom:0;left:50%;width:100px;min-height:136px;margin-left:-50px;transform-origin:50% 120%;pointer-events:none}
+.fan .card:nth-child(1){transform:rotate(-16deg)}
+.fan .card:nth-child(2){transform:rotate(0)}
+.fan .card:nth-child(3){transform:rotate(16deg)}
+h1{font:700 46px/1.05 var(--serif);margin:0;text-align:center;letter-spacing:.01em}
+.tagline{margin:8px 0 0;text-align:center;color:var(--dim)}
+.menu-btns{display:flex;flex-direction:column;gap:10px}
+.best{text-align:center;color:var(--dim);font-size:14px;margin:0}
+
+/* HUD */
+.hud{position:sticky;top:0;z-index:5;background:rgba(15,37,41,.95);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  padding:calc(8px + env(safe-area-inset-top)) 14px 8px;border-bottom:1px solid var(--line)}
+.hud-row{display:flex;align-items:center;gap:10px}
+.hearts{font-size:22px;letter-spacing:2px;color:var(--lac);flex:1}
+.hearts .lost{color:#3d5f64}
+.score{font-weight:700;font-variant-numeric:tabular-nums}
+.streak{color:#e0a45f;font-size:14px}
+.mini{border:1px solid var(--line);background:transparent;border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer}
+.bar{height:5px;background:#21444a;border-radius:3px;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--jade);width:0;transition:width .4s}
+.hud-sub{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-top:4px}
+
+/* гість */
+.visitor{--cbg:rgba(43,34,25,.07);--cbd:rgba(43,34,25,.4);--cfg:var(--ink);
+  margin:14px;padding:16px 16px 20px;border-radius:16px;background:var(--paper);color:var(--ink);position:relative;
+  box-shadow:0 12px 26px rgba(0,0,0,.4);outline:1px solid rgba(43,34,25,.3);outline-offset:-7px;overflow:hidden}
+.v-top{display:flex;align-items:center;gap:12px}
+.v-av{font-size:40px;line-height:1}
+.v-name{flex:1;min-width:0}
+.v-name b{display:block;font:700 19px/1.2 var(--serif)}
+.v-say{display:block;font-style:italic;font-family:var(--serif);font-size:15px;opacity:.8}
+.cups{font-size:20px;white-space:nowrap}
+.cups .lost{opacity:.2;filter:grayscale(1)}
+.visitor .chip{--cbg:rgba(43,34,25,.07);--cbd:rgba(43,34,25,.45);--cfg:var(--ink);color:var(--ink)}
+.reqlist{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.reqlist li{display:flex;gap:10px;align-items:center;font-size:17px;line-height:1.3}
+.reqlist .n{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(43,34,25,.5);display:inline-flex;align-items:center;justify-content:center;font:700 13px var(--sans)}
+.reqlist .hid .t{letter-spacing:.12em;opacity:.65}
+.reqlist .flip{animation:flip .5s}
+.req .chip{font-size:15px;padding:4px 12px}
+.stamp{position:absolute;right:14px;bottom:12px;transform:rotate(-10deg);border:3px double var(--lac);color:var(--lac);
+  font:700 24px var(--serif);padding:4px 14px;border-radius:6px;opacity:0;pointer-events:none;background:rgba(238,231,213,.85)}
+.stamp.show{animation:stamp .32s cubic-bezier(.2,.9,.3,1.2) forwards}
+.stamp.gone{border-color:#5b5346;color:#5b5346}
+@keyframes stamp{0%{opacity:0;transform:rotate(-10deg) scale(2.4)}100%{opacity:.95;transform:rotate(-10deg) scale(1)}}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+.msg{margin:0 14px 12px;padding:10px 12px;border-radius:10px;background:rgba(169,214,192,.08);border-left:3px solid var(--jade);min-height:46px;font-size:15px}
+.msg.bad{border-left-color:var(--lac);background:rgba(179,40,60,.12)}
+.msg.ok{border-left-color:#7fd0a0}
+.next{margin:0 14px 14px;width:calc(100% - 28px)}
+
+/* меню чаїв */
+.tray-head{display:flex;align-items:baseline;justify-content:space-between;padding:6px 14px 4px}
+.tray-head h2{font:700 20px var(--serif);margin:0}
+.toggle{font-size:14px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.toggle input{width:18px;height:18px;accent-color:var(--jade)}
+.filters{display:flex;gap:6px;overflow-x:auto;padding:6px 14px 8px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fchip{flex:none;border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer;white-space:nowrap}
+.fchip.on{background:var(--jade);color:#0d2226;border-color:var(--jade);font-weight:600}
+.search{display:block;width:calc(100% - 28px);margin:0 14px 10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--text);font:inherit}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px calc(28px + env(safe-area-inset-bottom))}
+@media(min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+.empty{grid-column:1/-1;color:var(--dim);text-align:center}
+
+/* картка чаю */
+.card{position:relative;min-height:124px;text-align:left;border-radius:12px;border:1.5px solid var(--tb,#5a8a86);
+  background:linear-gradient(160deg,var(--ts,#1d4147),var(--bg2));color:var(--text);padding:30px 10px 28px;
+  display:flex;flex-direction:column;justify-content:center;gap:4px;cursor:pointer}
+.cname{font:600 15px/1.2 var(--serif);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.cmeta{font-size:12px;color:var(--dim)}
+.cdesc{font-size:12px;color:var(--jade)}
+.pip{position:absolute;left:8px;top:6px;font-size:16px;line-height:1}
+.pip.p2{left:auto;top:auto;right:8px;bottom:6px;transform:rotate(180deg)}
+.card.tried{opacity:.42}
+.card.tried::after{content:"✕";position:absolute;right:10px;top:4px;font-size:20px;color:var(--lac)}
+
+/* шторка */
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet-back{position:absolute;inset:0;background:rgba(4,12,14,.72)}
+.sheet-panel{position:relative;width:100%;max-width:560px;max-height:92vh;max-height:92dvh;display:flex;flex-direction:column;
+  background:var(--bg2);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-head{position:relative;padding:16px 60px 8px 16px}
+.sheet-kicker{font-size:13px;color:var(--jade);margin:0 0 2px}
+.sheet-title{font:700 22px/1.2 var(--serif);margin:0}
+.need{margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(238,231,213,.08)}
+.need small{display:block;color:var(--dim);margin-bottom:5px}
+.need .chip{font-size:13px}
+.sheet-body{overflow:auto;padding:4px 16px 12px;-webkit-overflow-scrolling:touch}
+.sheet-foot{display:flex;gap:10px;padding:10px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.sheet-foot .btn{flex:1;padding:12px}
+.props{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 0}
+.props dt{color:var(--dim)}
+.props dd{margin:0}
+.quote{margin:12px 0;padding:8px 12px;border-left:3px solid var(--jade);font-family:var(--serif);font-style:italic}
+.about h3{font:700 17px var(--serif);margin:16px 0 4px}
+.about p{margin:0 0 10px;max-width:70ch}
+.howto{padding-left:20px;margin:6px 0 0}
+.howto li{margin:0 0 10px}
+
+/* підсумок */
+.over{padding:48px 22px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.over h2{font:700 34px/1.1 var(--serif);margin:0;text-align:center}
+.stats{display:grid;grid-template-columns:1fr auto;gap:8px 12px;background:rgba(169,214,192,.07);border-radius:12px;padding:14px 16px;margin:0}
+.stats dt{color:var(--dim)}
+.stats dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.dex-head{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 14px 6px}
+.dex-head h2{font:700 24px var(--serif);margin:0;flex:1}
+
+
+/* категорії й міні-картки */
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px calc(28px + env(safe-area-inset-bottom))}
+@media(min-width:520px){.cats{grid-template-columns:repeat(3,1fr)}}
+.cat{display:flex;align-items:center;gap:10px;min-height:66px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--tb);
+  background:linear-gradient(160deg,var(--ts),var(--bg2));color:var(--text);text-align:left;cursor:pointer}
+.cat-g{font-size:26px;line-height:1}
+.cat-n{font:700 17px/1.2 var(--serif)}
+.x{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:18px;line-height:1;cursor:pointer}
+.mini-list{display:flex;flex-direction:column;gap:8px;margin:8px 0 4px}
+.mini{border:1.5px solid var(--tb);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(160deg,var(--ts),var(--bg2))}
+.mini .n{font:600 15px/1.25 var(--serif)}
+.mini .d{font-size:12px;color:var(--jade)}
+.mini .acts{display:flex;gap:8px;margin-top:2px}
+.mini.tried{opacity:.55}
+.sm{flex:1;border-radius:9px;padding:9px 10px;font-weight:600;font-size:14px;border:1.5px solid var(--line);background:transparent;cursor:pointer}
+.sm.go{background:var(--jade);color:#0d2226;border-color:var(--jade)}
+.sm:disabled{opacity:.5;cursor:default}
+.note{margin:6px 0 10px;padding:8px 10px;border-radius:10px;border-left:3px solid var(--lac);background:rgba(179,40,60,.16);font-size:14px}
+/* критик */
+.vip{display:inline-block;margin-top:4px;background:var(--lac);color:#fff;border-radius:999px;padding:0 10px;font:700 12px var(--sans)}
+.visitor.vipcard{outline-color:#b9862c;box-shadow:0 0 0 2px rgba(185,134,44,.55),0 12px 26px rgba(0,0,0,.4)}
+/* заварювання */
+.brew{margin:6px 0}
+.qbox{margin:0 0 16px}
+.brew-q{margin:0 0 8px;font-weight:600}
+.opts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.opt{padding:12px 0;border:1.5px solid var(--line);border-radius:10px;background:transparent;font-weight:700;font-size:16px;cursor:pointer}
+.opt.on{background:var(--jade);color:#0d2226;border-color:var(--jade)}
+.res{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:rgba(169,214,192,.08)}
+.res.ok{border-left:3px solid #7fd0a0}
+.res.bad{border-left:3px solid var(--lac)}
+.total{font-weight:700;margin:12px 0 4px}
+
+
+/* міні-ігри */
+.mini-sub{margin:0 14px 10px;color:var(--dim)}
+.mgtiles{display:flex;flex-direction:column;gap:10px;padding:4px 14px calc(28px + env(safe-area-inset-bottom))}
+.mgtile{display:flex;gap:14px;align-items:center;text-align:left;padding:14px;border:1.5px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#1b3d43,var(--bg2));color:var(--text);cursor:pointer}
+.mgtile .g{font-size:32px;line-height:1}
+.mgtile b{display:block;font:700 18px var(--serif)}
+.mgtile small{display:block;color:var(--dim);line-height:1.35}
+.mgtile .rec{color:var(--jade)}
+.mg-title{font:700 17px var(--serif);flex:1;min-width:0}
+.mg-rule{margin:14px 14px 6px;font-weight:600}
+.mg-card{margin:8px 14px;padding:22px 16px;border-radius:16px;background:var(--paper);color:var(--ink);text-align:center;font:700 22px/1.25 var(--serif);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.mg-card.clues{text-align:left}
+.mg-card .chip{--cbg:rgba(43,34,25,.07);--cbd:rgba(43,34,25,.4);--cfg:var(--ink);font-size:16px;font-family:var(--sans);font-weight:400}
+.mg-infowrap{margin:0 14px 10px;display:flex;justify-content:center}
+.mg-infowrap .sm{flex:none;padding:6px 18px}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;padding:0 14px}
+.bin{padding:18px 10px;border-radius:12px;border:1.5px solid var(--line);background:rgba(169,214,192,.08);color:var(--text);font:600 16px var(--sans);cursor:pointer}
+.bin.ok,.qopt.ok{background:#2d6a4a;border-color:#7fd0a0;color:#fff}
+.bin.no,.qopt.no{background:#6b2232;border-color:var(--lac);color:#fff}
+.mg-fb{margin:12px 14px;padding:10px 12px;border-radius:10px;border-left:3px solid var(--jade);background:rgba(169,214,192,.08);min-height:44px}
+.mg-fb.ok{border-left-color:#7fd0a0}
+.mg-fb.bad{border-left-color:var(--lac);background:rgba(179,40,60,.14)}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
+.pcol{display:flex;flex-direction:column;gap:8px}
+.olist{padding:0 14px}
+.pbtn{padding:12px 10px;border-radius:10px;border:1.5px solid var(--line);background:rgba(169,214,192,.06);color:var(--text);text-align:left;font:15px/1.3 var(--sans);cursor:pointer}
+.pbtn.sel{border-color:var(--jade);background:rgba(169,214,192,.22)}
+.pbtn.done{opacity:.35;border-color:#7fd0a0}
+.pbtn.bad{border-color:var(--lac);background:rgba(179,40,60,.25);animation:shake .35s}
+.ladder{list-style:none;margin:10px 14px;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+.ladder li{counter-increment:s;display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(127,208,160,.14);border-left:3px solid #7fd0a0}
+.ladder li::before{content:counter(s);font-weight:700;margin-right:10px;color:var(--jade)}
+.ladder li span{flex:1}
+.techcard{margin:10px 14px;padding:14px;border-radius:14px;background:var(--paper);color:var(--ink);border:2px dashed rgba(43,34,25,.5)}
+.tc-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+.techcard h3{font:700 20px/1.2 var(--serif);margin:2px 0 2px}
+.tc-sub{opacity:.75;margin-bottom:8px}
+.tf{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid rgba(43,34,25,.15)}
+.tf:last-child{border-bottom:0}
+.tv{font-weight:600;text-align:right}
+.tv.blank{letter-spacing:.2em;opacity:.55;border-bottom:2px dashed rgba(43,34,25,.6)}
+.tv.good{color:#1f6b3f}
+.tv.bad{color:#9b2237}
+.tq{margin:12px 14px}
+.qopts{display:flex;flex-wrap:wrap;gap:8px}
+.qopt{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--text);font:600 15px var(--sans);cursor:pointer}
+.qopt.on{background:var(--jade);color:#0d2226;border-color:var(--jade)}
+.qopt:disabled{cursor:default}
+.qgrid{display:flex;flex-direction:column;gap:8px;padding:8px 14px}
+.qopt.big{text-align:left;font-family:var(--serif);font-size:16px;font-weight:600;padding:14px}
+
+
+/* навчання */
+.known{color:var(--jade);font-weight:600}
+.lcat{display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px;border-radius:14px;border:1.5px solid var(--tb);background:linear-gradient(160deg,var(--ts),var(--bg2));color:var(--text);cursor:pointer}
+.lc-top{display:flex;align-items:center;gap:10px}
+.lc-top .g{font-size:26px;line-height:1}
+.lc-top b{font:700 18px var(--serif);flex:1}
+.lcat small{color:var(--dim)}
+.catbody{padding:6px 14px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+.lhead{font:700 20px/1.25 var(--serif);margin:14px 14px 6px}
+.catbody .lhead{margin:8px 0 0}
+.lrow{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:rgba(169,214,192,.05);color:var(--text);cursor:pointer}
+.lrow .mark{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.lrow.done .mark{background:#2d6a4a;border-color:#7fd0a0}
+.lrow b{display:block;font:600 16px/1.25 var(--serif)}
+.lrow small{color:var(--jade)}
+.lrow div{flex:1;min-width:0}
+.lrow .act{flex:none;font-size:13px;color:var(--dim)}
+.lp{margin:10px 14px;font-size:17px;line-height:1.5;max-width:70ch}
+.lp.tip{color:var(--jade);font-size:15px}
+#lesson-body .chips{margin:6px 14px}
+#lesson-body .chips.big .chip{font-size:17px;padding:5px 14px}
+#lesson-body .props{margin:10px 14px}
+#lesson-body .quote{margin:10px 14px}
+.lfoot{display:flex;gap:10px;padding:8px 14px calc(24px + env(safe-area-inset-bottom))}
+.lfoot .btn{flex:1}
+.lfoot .btn[hidden]{display:none}
+.ovl{margin:10px 14px;padding-left:20px}
+.ovl li{margin:0 0 10px;font-size:16px;line-height:1.45}
+.cmp{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 8px;margin:10px 14px;align-items:stretch}
+.cmp .ch{font:700 14px/1.25 var(--serif);padding:6px 8px}
+.cmp .ck{color:var(--dim);font-size:13px;padding:8px 0}
+.cmp .cv{padding:8px;border-radius:8px;background:rgba(169,214,192,.05);font-size:14px;line-height:1.35}
+.cmp .cv.diff{background:rgba(224,164,95,.22);border:1px solid rgba(224,164,95,.6)}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<section id="scr-title" class="screen title-screen">
+  <div class="fan" aria-hidden="true"></div>
+  <div>
+    <h1 data-t="title">Чайна зала</h1>
+    <p class="tagline" data-t="tagline"></p>
+  </div>
+  <div class="menu-btns">
+    <button class="btn" id="b-continue" data-t="btn_continue" hidden></button>
+    <button class="btn" id="b-new" data-t="btn_new"></button>
+    <button class="btn ghost" id="b-learn" data-t="btn_learn"></button>
+    <button class="btn ghost" id="b-mini" data-t="btn_mini"></button>
+    <button class="btn ghost" id="b-dex" data-t="btn_dex"></button>
+    <button class="btn ghost" id="b-how" data-t="btn_how"></button>
+  </div>
+  <p class="best" id="best-line"></p>
+</section>
+
+<section id="scr-game" class="screen" hidden>
+  <header class="hud">
+    <div class="hud-row">
+      <div class="hearts" id="hearts"></div>
+      <span class="streak" id="streak"></span>
+      <span class="score" id="score"></span>
+      <button class="mini" id="b-home" data-t="btn_menu" data-t-aria="aria_home"></button>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="hud-sub"><span id="lvl"></span><span id="prog"></span></div>
+  </header>
+  <div class="visitor" id="visitor"></div>
+  <p class="msg" id="msg" aria-live="polite"></p>
+  <button class="btn next" id="b-next" hidden>Наступний гість</button>
+  <button class="btn ghost next" id="b-brew" data-t="btn_brew" hidden></button>
+  <div class="tray-head">
+    <h2 data-t="tray_title"></h2>
+    <label class="toggle"><input type="checkbox" id="easy"> <span data-t="toggle_easy"></span></label>
+  </div>
+  <div id="tray"></div>
+</section>
+
+<section id="scr-dex" class="screen" hidden>
+  <div class="dex-head"><h2 data-t="dex_title"></h2><button class="mini" id="b-dex-back" data-t="btn_back"></button></div>
+  <div id="dex"></div>
+</section>
+
+<section id="scr-learn" class="screen" hidden>
+  <div class="dex-head"><h2 data-t="learn_title"></h2><button class="mini" id="b-learn-back" data-t="btn_back"></button></div>
+  <p class="mini-sub" data-t="learn_sub"></p>
+  <p class="mini-sub known" id="learn-known"></p>
+  <div id="learn-list" class="mgtiles"></div>
+</section>
+
+<section id="scr-cat" class="screen" hidden>
+  <div class="dex-head"><h2 id="cat-title"></h2><button class="mini" id="b-cat-back" data-t="btn_back"></button></div>
+  <div id="cat-body" class="catbody"></div>
+</section>
+
+<section id="scr-lesson" class="screen" hidden>
+  <header class="hud">
+    <div class="hud-row">
+      <b class="mg-title" id="lesson-title"></b>
+      <span class="streak" id="lesson-step"></span>
+      <button class="mini" id="b-lesson-exit" data-t="lesson_exit"></button>
+    </div>
+    <div class="bar"><i id="lesson-bar"></i></div>
+  </header>
+  <div id="lesson-body"></div>
+</section>
+
+<section id="scr-mini" class="screen" hidden>
+  <div class="dex-head"><h2 data-t="mini_title"></h2><button class="mini" id="b-mini-back" data-t="btn_back"></button></div>
+  <p class="mini-sub" data-t="mini_sub"></p>
+  <div id="mini-list" class="mgtiles"></div>
+</section>
+
+<section id="scr-mg" class="screen" hidden>
+  <header class="hud">
+    <div class="hud-row">
+      <b class="mg-title" id="mg-title"></b>
+      <span class="streak" id="mg-prog"></span>
+      <span class="score" id="mg-score"></span>
+      <button class="mini" id="b-mg-exit" data-t="mg_exit"></button>
+    </div>
+    <div class="bar"><i id="mg-bar"></i></div>
+  </header>
+  <div id="mg-body"></div>
+</section>
+
+<section id="scr-over" class="screen over" hidden>
+  <h2 id="over-title" data-t="over_title"></h2>
+  <dl class="stats" id="over-stats"></dl>
+  <div class="menu-btns">
+    <button class="btn" id="b-again" data-t="btn_again"></button>
+    <button class="btn ghost" id="b-over-home" data-t="btn_home"></button>
+  </div>
+</section>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-back" id="sheet-back"></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-head" id="sheet-head"></div>
+    <div class="sheet-body" id="sheet-body"></div>
+    <div class="sheet-foot" id="sheet-foot"></div>
+  </div>
+</div>
+
+<script>
+const TEAS=[
+{
+"id": "t1",
+"name": "Інь Цзюнь Мей",
+"type": "Червоний",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Інтроверт",
+"art": "#R7",
+"desc": [
+"Медовий",
+"Карамельний",
+"Димний"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Класика. Зігріває. Хлібний, медовий, карамельний. Затишний чай — рекомендувати коли хочеться чогось теплого і заспокоюючого.",
+"about": "Цзінь Цзюнь Мей - Тунму на півночі провінції Фуцзянь (гори Уїшань). Інь Цзюнь Мей - Основна різниця полягає в кольорі сировини та ступені окислення/обробки. В цзінь цзюнь меі більше ворсистих золотих листочків - він повністю з них складається. В інь цзюнь меї вони подекуди зустрічаються. по факту інь цзюнь мей це слабкіший грейд цзінь цзюнь мея і вищий грейд базового дян хуна, але від того він виокремлюється в іншу категорію."
+},
+{
+"id": "t2",
+"name": "Му Дань Ван 2025",
+"type": "Білий",
+"region": "Фуцзянь",
+"novice": false,
+"char": "Екстраверт",
+"art": "#W3",
+"desc": [
+"Вершковий",
+"Солодкий"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–100°C",
+"infusions": "6",
+"pour": "Нормальний",
+"comment": "Овочевий білий — якщо є такий запит, рекомендуємо його. Для любителів білих чаїв, які хочуть скуштувати нові профілі. Релакс, вечірній.",
+"about": "Mu Dan Wang - королівська півонія. На відміну від стандартного Бай Му Дань, де пропорція листя до бруньок може бути різною, у «Вані» використовуються лише найповніші, соковиті бруньки та один-два наймолодших листочки. Це завжди ранньовесняний чай. кінець березня < збір < кінець квітня. Смакує найкраще саме свіжим в той час як Бай My Дань підлягає витримки і набуває більшої глибини та смакові відтінків (курага, горіховість). Наш муданьван - минулорічний , він має більш овочевий профіль , але тим не менш викликав зацікавлення при відборі."
+},
+{
+"id": "t3",
+"name": "Шу Пуер Рисове Поле немає",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "",
+"art": "#Sh10",
+"desc": [
+"Рисовий",
+"Солодкий"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 20мл",
+"temp": "95–100°C",
+"infusions": "5",
+"pour": "Нормальний",
+"comment": "Рекомендуємо у випадках конкретного запиту на рисовий профіль. Сировина адекватна, чіткий рисовий профіль. Про рисовий пуер більше в глосарії.",
+"about": "Шу Пуер з ароматом клейкого рису. Рисовий профіль зумовлений доданням рисової хлорофіли при виробництві. Швидко розкривається, класно для термосу."
+},
+{
+"id": "t4",
+"name": "Я Ши Сян Super FIre",
+"type": "Улун",
+"region": "Гуандун",
+"novice": false,
+"char": "Екстраверт",
+"art": "Без артикула",
+"desc": [
+"Квітковий",
+"Солодкий",
+"Мигдаль",
+"Медовий",
+"Здоба"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Великий, поздовжньо скручений, темного оливково-бурого кольору з глянцевим відливом. У прогрітому посуді видає потужний шлейф тропічних фруктів та кондитерської солодкості. Складний, багатошаровий, виражено квітковий. Головну роль грають ноти жимолості, білого жасмину, квітучого мигдалю та легкі цитрусові іскри. Щільний, маслянистий, збалансований. У ньому переплітаються відтінки соковитих екзотичних фруктів, ягідної кислинки та мигдального крему. Відчувається благородна гіркота, що швидко переходить у солодкість, яка є характерною для високогірної сировини.",
+"about": "Дан Цун Я Ши Сян сильного вогню з провінції Ґуандун, що перекладається як \"аромат качиного посліду\" Існує цілком прагматична історія про те, чому цей чудовий сорт нагородили таким дивним ім'ям: Ґрунтова версія: Материнський кущ цього чаю ріс на унікальному глинисто-жовтому ґрунті, який місцеві фермери називали «качиним послідом» (Yashi Tu) через його специфічний колір та високу родючість. Чай виходив неймовірно ароматним. Хитрість фермера: Творець цього підсорту, селянин на прізвище Вей, помітив, що його чай має феноменальний смак. Щоб заздрісні сусіди не вкрали живці та не дізналися секрет виробництва, він заявив, що чай нікудишній, а його аромат нагадує... ну, ви зрозуміли. Стратегія спрацювала: назва закріпилася. У 2014 році місцеві виробники спробували офіційно перейменувати сорт на благородний «Інь Хуа Сян» (银花香 — Аромат Срібного Жасмину / Жимолості). Але чайний світ збунтувався: оригінальна ексцентрична назва вже стала світовим брендом."
+},
+{
+"id": "t5",
+"name": "Бай Му Дань Витриманий",
+"type": "Білий",
+"region": "Фуцзянь",
+"novice": false,
+"char": "Екстраверт",
+"art": "#W2",
+"desc": [
+"Квітковий",
+"Медовий",
+"Солодкий"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "Релаксуючий, вечірній, солодкий. Якщо хочеться смачного і діючого білого — рекомендуємо його.",
+"about": "Бай Му Дань - Біла Півонія - Fuding Da Bai або Zhenghe Da Bai. сировина з флешів - брунька + 2 верхніх листочка. Бай Му Дань виготовляють із кущів сорту Да Бай Ча (Великий Білий Чай). Це особливий підвид чайної рослини з дуже великими бруньками та густим білим ворсом. Хоча зараз головними центрами є Фудін та Чженхе, перші згадки про Бай Му Дань як про окремий сорт ведуть до містечка Шуйцзи в уїзді Цзяньян (кінець XIX століття). Там його почали робити з кущів сорту Да Хао та Сяо Бай (Малий Білий)"
+},
+{
+"id": "t6",
+"name": "Гонг Мей ( Шоу мей )",
+"type": "Білий",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Екстраверт",
+"art": "W6",
+"desc": [
+"Медовий",
+"Деревний",
+"Солодкий"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–100°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "Медовий білий, класика. Релакс на вечір. Нижчий грейд не означає поганий чай — це просто інша сировина з власним характером.",
+"about": "Gong Mei - найничжий грейд білих чаїв , адже не має ворсистих бруньок взагалі . Гонг Мей виготовляється з сорту чайного куща Сяо Бай (малий білий), на відміну від дорожчих сортів, які роблять з Да Бай (великий білий). Через те, що лист зрілий, у ньому більше цукрів та мінералів. Це робить настій густішим, з вираженими медовими, сухофруктовими та деревними нотами. Гарно піддається сухому збереганн. і стає багатшим в смаку. Нижчий грейд не дорівнює поганий чай. Виготовити його простіше, адже він листовий, відповідно на його збір потрібно менше зусиль."
+},
+{
+"id": "t7",
+"name": "Веліамір Гу Шу Бай Ча млинець 200 г",
+"type": "Білий",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "",
+"desc": [
+"Солодкий",
+"Квітковий",
+"Курага"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 30мл",
+"temp": "90–95°C",
+"infusions": "10",
+"pour": "Швидкий",
+"comment": "Для новачків підійде, але не перетримувати. Смачний, трошки жорсткуватий без глибини та об'єму. Витримує багато проливів — можуть просити додаток води. Співзвучний з шен пуерами.",
+"about": "Білий чай з сировини Гу Шу (старі кущі). Сильна пресована форма, тривалі заварювання наповнені надмірною жорсткістю тому з цим білим чаєм треба робити швидкі проливи та довгі перерви між піалами, щоб мати час для формування стійкого посмаку та відчути резонанс смаку. Витримує багато проливів, можуть просити додаток води."
+},
+{
+"id": "t8",
+"name": "Об’єднання братів",
+"type": "Шен пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Інтроверт",
+"art": "",
+"desc": [
+"Земляний",
+"Деревний",
+"Буряк",
+"Вінтажний підвальчик",
+"Евкаліпт"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "95–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "Радити у випадках «спробувати щось нетипове», «вінтажний підвал», любителям евкаліпту та цукрового буряку. Найпотужніший стан, дуже п'янкий. Чай не для новачків.",
+"about": "Цей чай не для всіх - нетиповий профіль старості та “вінтажного підвальчіка” може відштовхувати. Але чай повний на нестандартні дескриптори, має потужний стан і тривалий посмак. Заварювати можна як Шу пуер, адже він має схожі з ним властивості. Чай не для новачків."
+},
+{
+"id": "t9",
+"name": "Юньнанський зелений 26 продаєм",
+"type": "Зелений",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "",
+"desc": [
+"Солодкий",
+"Квітковий",
+"Фруктовий"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "80–85°C",
+"infusions": "7",
+"pour": "Швидкий",
+"comment": "Яскравий зелений — рекомендувати якщо хочеться поєднати солодкість і свіжість. Ароматика — сильна сторона. Підходить для знайомства новачків.",
+"about": "Зелений з крупного юннанського листа. Весняний збір 2026 року, має дуже потужну смакоароматику та транспорентність (прозорість,зрозумілість). Ітерація 2026 року: якісно відібраний зелений з юннанського теруару. Зелений юннанський моносировинний чай — це чистий весняний лист, зібраний з високогірних чайних дерев у провінції Юньнань, Південно-Західний Китай. Він уособлює справжній дух дикої природи, туманних гір і традиційного китайського чаювання. Цей чай виготовлений виключно з листа одного сорту та з однієї місцевості — саме це і означає моносировинний підхід. Він дозволяє найповніше відчути терруар, тобто природні особливості регіону: ґрунти, мікроклімат, висоту над рівнем моря. М’яко тонізує, підтримує розумову активність, сприяє відновленню після навантажень. Багатий на антиоксиданти, амінокислоти та поліфеноли. Покращує травлення, зміцнює імунітет та допомагає підтримувати водно-сольовий баланс організму - і це не просто гучні слова, він таки корисний). Перше знайомство з сировиною - домінантний пломбір з флоральною ноткою. В прогрітому посуді все координально змінюється: чай нарваний, молодий, рветься на амбразуру своїми поліфенольними редутами. Профіль зміщується в бік соєвого умамі: злаки, соя, сейтан, гречиха. Чаю потрібно пару місяців щоб втамувати таніни та добрати дехлорофілізації за рахунок часу. Чай на смак трохи різкий, якщо його заварювати стандартно, тому рекомендуємо майже не настаювати та акцентуватись на ароматиці - вона в цьому лоті глибока та свіжа: манго, магнолія, чубушник, трояндове варення, соєва основа присутня але залишково. Настій прозорий, світло-зелений із жовтуватим відтінком. Можна зустріти копчену паприку, білкові. Стан - рівний та чистий як вимите скло. Має сильний бадьорий стан."
+},
+{
+"id": "t10",
+"name": "Ча Тоу Шу Пуер",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Інтроверт",
+"art": "",
+"desc": [
+"Горіховий",
+"Деревний",
+"Земляний"
+],
+"time": "Будь-який",
+"vessels": [
+"Чайник",
+"Варка"
+],
+"weight": "1г / 30мл",
+"temp": "95–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "Скоріш за все будемо варити по Лу Ю Ю з собою, пропонувати також можна для проливів любителям м’яких горіхових шух високих грейдів (якісні)",
+"about": "Ча Тоу - перекладається як “Чайна Голова”. Назва походить від вигляду цих комків з чаєм - при виготовленні Шу Пуеру за технологією Wo Dui. Потребує сильного окропу щоб розкритись. Найкраще підходить для варки за методом Лу Ю Я на відкритому вогні (пальнику). Щільна структура проливами може розкритись за допомогою нульового проливу більш тривалий час - 20-30 секунд і надалі використовувати Загальні положення чаювання."
+},
+{
+"id": "t11",
+"name": "Хуан Шань Мао Фен 2025",
+"type": "Зелений",
+"region": "Аньхой",
+"novice": false,
+"char": "Екстраверт",
+"art": "#Y4",
+"desc": [
+"Горіховий",
+"Ягідний",
+"Вершковий"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "80–85°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Зелений. Рекомендуємо для охолодження, освіжаючого ефекту, ясності і при цьому активній роботі. На вечір не бажано.",
+"about": "Huang Shan Mao Feng Ворсисті Леза(Піки-Вершини) Жовтих Гір, Збір до Ціньмін 2025 (до 5 квітня) - зелений Хуан Шань Маофен, провінція Аньхой . Материнським кущем вважається Хуань Шань Да Є Чжун - корінний місцевий різновид камелії з великим ворсистим листом і брунькою, адаптований саме під екстремальний клімат Жовтих Гір (перепади температури, кількість опадів). Ворсистий зелений чай. Фенг. Характерність - наповнений ворсом непрозорий чайний настій при заварюванні. Перші проливи можна починати з переливу води з термоса в чахай щоб дати декілька градусів менше при першому доторку (розкриття ароматики). Для виробництва використовую флеші - брунька та 2 листочки."
+},
+{
+"id": "t12",
+"name": "Бай Хао Інь Чжень 2025",
+"type": "Білий",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Екстраверт",
+"art": "#W7",
+"desc": [
+"Квітковий",
+"Вершковий",
+"Пряний"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань",
+"Чайник"
+],
+"weight": "1г / 30мл",
+"temp": "90–100°C",
+"infusions": "5",
+"pour": "Нормальний",
+"comment": "Якщо запит на щось тонке, повітряне але водночас смачне і діюче — обираємо цей. Підходить для новачків — дуже складно перезаварити. Рекомендувати парочкам. Виключно бруньковий — найкорисніший (мікрогрін у світі чаю).",
+"about": "Бай Хао Інь Чжень збір перед Цін Мін (до 5 квітня) - білі ворсисті срібні голки. Материнський кущ Fudin Da Bai Cha - при його обробці утворюється ворс. Бруньки розкриваються повільніше, адже структура набагато щільніша ніж в відкритому листі, яка слугує певним захисним коконом для майбутнього листа, відповідно, екстрактивність (руйнування міжклітинних мембран) відбувається плавніше і потребує більше часу і вищої температури. Виключно бруньковий - тому найдорожчій і найкорисніший (брунькова сировина- мікрогрін в світі чаю)"
+},
+{
+"id": "t13",
+"name": "Сі Ху Лун Цзін 2025",
+"type": "Зелений",
+"region": "Чжецзян",
+"novice": false,
+"char": "Екстраверт",
+"art": "#G1",
+"desc": [
+"Горіховий",
+"Квітковий",
+"Солодкий"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "8",
+"pour": "Швидкий",
+"comment": "Зелений. Рекомендуємо як топовий зелений в закладі, для охолодження, освіжаючого ефекту, ясності і при цьому активній роботі. На вечір дозовано.",
+"about": "Сі Ху Лун Цзін. Long Jing Qun Zhong материнський кущ . Легенда про 18 імператорських кущів Лун Цзін озеро Сі Ху . Тонкий і повнотілий чай, горіховий і маслянистий. Потребує небагато уваги але бажано не перетримувати. Ша Цін (вбивство зелені) можливо відбувалось на воках , промаслених насінням чайного дерева - сировина в сухому вигляді дуже масляниста. Витримує багато проливів, перші проливи можна починати з переливу води з термоса в чахай щоб дати декілька градусів менше при першому доторку (розкриття ароматики). Класика зеленого чаю. Для виробництва лунцзіна використовують лише верхівки пагонів із двома верхніми листками. Багатий на амінокислоти."
+},
+{
+"id": "t14",
+"name": "Кімун Хун Ча",
+"type": "Червоний",
+"region": "Аньхой",
+"novice": false,
+"char": "Інтроверт",
+"art": "#R12",
+"desc": [
+"Медовий",
+"Вершковий",
+"Ягідний"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань",
+"Чайник"
+],
+"weight": "1г / 40мл",
+"temp": "90–100°C",
+"infusions": "5",
+"pour": "Нормальний",
+"comment": "Зігріває. Якщо запит на медовий чай — сміливо рекомендуємо цей Кімун. Більше релаксовий настрій.",
+"about": "Keemun Hong Cha роблять із листя місцевого сорту Чжу Є Чжун (Zhu Ye Zhong) . Місцевість - Південь Аньхой, Повіт Цімень Інший вигляд листа культивару(форма листя бамбуку) + еталонна фуцзянська технологія = нова кімунська група (трикутник). Прослідковується медовість фуцзянських червоних як домінанта + кислинка?вершковість, здоба, ягідність та тропічність."
+},
+{
+"id": "t15",
+"name": "Да Хун Пао",
+"type": "Улун",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Інтроверт",
+"art": "#Wu3",
+"desc": [
+"Фруктовий",
+"Тютюн",
+"Карамельний"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "92–100°C",
+"infusions": "6",
+"pour": "Нормальний",
+"comment": "Класика. Розповідаємо більше про самі кущі, наголошуємо на особливостях нашого чаю. Трошки історії при потребі. Більше є в Глосарій.doc в закріплених в робочій группі",
+"about": "Сортовий Да Хун Пао - з генетичного двійника, материнського куща Ці Дань. Посередній ДХП це зазвичай мікс з підвидів смажених уішанців (ТЛХ, ШС, ЖГ). Як відрізнити - 2-3 проливу “вогню з табаком” заміщуються фруктами з кислинкою “уішанської мелодії” - солодка терпчинка, притаманна багатьом Дан Цунам."
+},
+{
+"id": "t16",
+"name": "Хей Ча Тань Фу Байшасі 2019",
+"type": "Хейча",
+"region": "Хунань",
+"novice": false,
+"char": "Інтроверт",
+"art": "#B3",
+"desc": [
+"Деревний",
+"Фруктовий",
+"Земляний"
+],
+"time": "Вечір",
+"vessels": [
+"Чайник",
+"Гайвань"
+],
+"weight": "1г / 35мл",
+"temp": "90–100°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "Не для новачків, але для тих, хто готовий до нового досвіду. Щось середнє між шу і шеном, але з власним унікальним профілем. Потужний стан, глибокий.",
+"about": "Bai Sha Xi - історична місцевість : Хей Ча , різниця від Шу. Чай не для новачків але для тих хто не очікує і готовий до нового досвіду в світі чаю. Щось песередне між шу і шеном але з тонкощами виробництва утворився окремий профіль, більше схожий на витримані шени. Чай для тих, хто хоче спробувати щось нове в контексті китайськиї чаїв. Стан потужний, глибокий."
+},
+{
+"id": "t17",
+"name": "Уі Шань Жоу Гуй",
+"type": "Улун",
+"region": "Фуцзянь",
+"novice": false,
+"char": "Інтроверт",
+"art": "#Wu1",
+"desc": [
+"Медовий",
+"Пряний",
+"Димний"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "92–100°C",
+"infusions": "5",
+"pour": "Нормальний",
+"comment": "Рекомендуємо як один з кращих в цій категорії, поціновувачам смажених улунів (уішанців, ДХП тощо) . Класифікуємо як глибокий і багатогранний чай. Концентрує та фокусує, для важливих справ або глибокої розумової діяльності, для уважного чаювання",
+"about": "Wuyi Rougui - Уі Жоу Гуй - живцевий культивар (маленькі пагінці від прадавніх кущів що культивувались для збільшення врожаю) кущів з Матоу Янь - скеля Кінської Голови . Профіль - генетична особливість сорту, яка проявляється завдяки специфічному ферментуванню та майстерному прогріву на вугіллі (Хун Пей). Плетені кошики над тліючим вогнем . Існує слабка/середня/сильна ступінь Хун Пей, де кількість вогню впливає на те наскільки сильно чай просмажився всередені та зовні. Міцний але водночас солодкий (мед) профіль. Живий вогонь: дає м'яке інфрачервоне випромінювання, яке прогріває лист зсередини дозовні, а не просто смажить поверхню."
+},
+{
+"id": "t18",
+"name": "Тіє Гуань Інь",
+"type": "Улун",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Екстраверт",
+"art": "#Wu4",
+"desc": [
+"Квітковий",
+"Солодкий"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Нормальний",
+"comment": "Класика. Легкий квітковий свіжий чай. Популярний, зрозумілий, універсальний — можна як зранку так і ввечері. Підходить для новачків.",
+"about": "Те Гуань Інь - провінція Ансі, Фуцзянь- альмаматер улунів- легенда про материнський кущ в Сіпіні (під охороною , джерело ТГ). Справжня тегуань інь з культивару що має бруньку “Червоне Серце”. Зарза на ринку зазвичай гібриди всі з кущів зеленого кольору. Чому вона «Залізна»? Назва Tiě (铁) стосується не лише легенди, а й фізики: Вага: Якісний лист настільки щільно скручений, що при падінні в гайвань він має видавати металевий дзенькіт. Важкість: Якщо взяти жменю ТГ і жменю іншого улуну, ТГ буде відчутно важчою. Колір: Традиційний прогрітий лист має відблиск холодного заліза. Легенда про відбитки пальців."
+},
+{
+"id": "t19",
+"name": "Сіньян Мао Цзянь 2025",
+"type": "Зелений",
+"region": "Хенань",
+"novice": false,
+"char": "Екстраверт",
+"art": "#G6",
+"desc": [
+"Вершковий",
+"Солодкий"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "80–85°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Базовий зелений — зазвичай спеціально не рекомендуємо, але якщо питають щось з ворсистих — пригадуємо.",
+"about": "Xinyang Qunti Zhong Mao Jian - Сіньян Цюньті Джун Мао Цзянь. Цюньті Джун значить - місцева сировина. Культивар Xinyang 210 - саме він містить велику кількість ворсу при обробці. Сіньян знаходиться на півночі провінції Хенань. наповнений ворсом непрозорий чайний настій. Якщо будемо додавати до чайного меню - ще разок перед тип продегустувати."
+},
+{
+"id": "t20",
+"name": "Хуо Шань Хуан Я 2025 продаєм Y",
+"type": "Жовтий",
+"region": "Аньхой",
+"novice": false,
+"char": "Екстраверт",
+"art": "#Y3",
+"desc": [
+"Гарбузове пюре",
+"Вершковий",
+"Норі",
+"Тютюн",
+"Лимонна кислинка",
+"Дюшес"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Тонкий та вишуканий. Рекомендувати для тих , хто помічає і цікавиться деталями. Тендітний чай, рекомендуємо спробувати якщо ніколи не куштували жовті чаї і полюбляють світлі чаї. Або коли треба тонко спровадити - дуже підіймає метаболічний процес",
+"about": "Хуо Шань Хуан Я (Huo Shan Huang Ya) материнський кущ Huo Shan Qun Zhong або «Жовті бруньки з гори Хуо» - томління жовтого чаю відбувається за рахунок власного тепла та зменшення кількості хлорофілу після перших етапів обробки чайного листа. Більш ніжний, потребує швидких зливів щоб на передній план не виходила “внутрішня зелень” хлорофілів. Жовті підсилюють метаболізм - після чаювання активується бажання перекусити. Чай витончений і потребує уваги до деталей заварювання щоб насолодитися ним в повній мірі. Перші проливи можна починати з переливу води з термоса в чахай щоб дати декілька градусів менше при першому доторку (розкриття ароматики)."
+},
+{
+"id": "t21",
+"name": "Мульти-таскер",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": true,
+"char": "Інтроверт",
+"art": "b7",
+"desc": [
+"Камфора",
+"Сухофрукти",
+"Шоколад"
+],
+"time": "Ранок–День",
+"vessels": [
+"Чайник"
+],
+"weight": "постер",
+"temp": "95–100°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "Назва говорить сама за себе: мульти-таскер означає багатозадачність. Це символічна назва до цього пуеру виникла дуже влучно і характеризує його стан. Розсипний гунтін , швидка екстракція. Може відштовхувати своїм ароматом в сухій сировині, але треба про це комунікувати і пояснювати що це лише з вигляду він “уродєц”. Чай дуже мякесенький, смачний і заходить піалочка за піалочкою. АКЦЕНТ НА НЬОМУ!"
+},
+{
+"id": "t22",
+"name": "Шен Пуер Мао Ча 2025 (Юний орел)",
+"type": "Шен пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Екстраверт",
+"art": "#Shen1",
+"desc": [
+"Димний",
+"Тютюн",
+"Солодкий",
+"Ментол"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "7",
+"pour": "Швидкий",
+"comment": "Схожий на зелений чай за виглядом, але потужніший характером. На вечір краще не пропонувати — занадто активний. Може здатись різким для новачків через терпкість при перетримці. Рекомендувати тим, хто хоче щось нове і не боїться насиченого смаку.",
+"about": "2025 Рік. Молодий Шен Пуер Юннань, Розсипний (мао ча) сирий(зелений) пуер, зафіксований після стандартного методу приготування листя. Швидкі проливи бо дуже тонкі міжклітинні мембрани , тому процес екстракції відбувається швидше, адже для їх руйнування та виділення “чайного соку” потрібно менше часу та менша температура. Екстраверт Чай схожий на зелений чай. На вечір може бути заактивний, хібащо поєднювати його з активною діяльністю. Може показатись різким для новачкив, адже має багато танінності(терпкості) при перетримці."
+},
+{
+"id": "t23",
+"name": "шай хун юннань",
+"type": "Червоний",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "",
+"desc": [
+"Персик",
+"Абрикос",
+"Кориця",
+"Гвоздика"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 30мл",
+"temp": "90°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "Shai Hong Cha (晒红) в перекладі з китайської означає висушений на Сонці чай. При виготовленні чаю не використовують обсмаження в печі або на вугіллі, що трошки відрізняє цей сорт від інших червоних чаїв. Зібраний весною 2023 року, вирощений в провінції Юннань і літом 2023 був виготовлений. Саме літом найбільш сприятливі умови для приготування чаю. Шай Хун. Чай розкладають в спеціальних кімнатах з прозорими вікнами, які закриті прозорими легкими тканинами, що пропускають сонячні промені, і дають можливість Сонцю поступово забрати вологу з листя чаю, періодично перегортаючи сировину. Заряджений цією енергією, цей чай пробудить зранку і налаштує на продуктивний день, так як має схожі технології приготування з чаєм категорії пуер."
+},
+{
+"id": "t24",
+"name": "Да У Є Дан Цун",
+"type": "Улун",
+"region": "Гуандун",
+"novice": true,
+"char": "Інтроверт",
+"art": "без артикулу",
+"desc": [
+"мед",
+"Вершковий",
+"Кокос",
+"Лічі",
+"інжир"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "",
+"about": "Дан Цун “Великий Темний Лист”, ґуандуньский улун з родини Фен Хуан Дань Цунів (Одинокі Кущі з Феніксових гір). Чай має таку назву через дійсно велике листя темно-зеленого кольору в порівняні з іншими Дань Цунами. Сировина для цього чаю зібрана з дерев віком 50 років та висотою 2-3 метра. Висота зростання 800 метрів над рівнем моря. Скрутка листя повздовжна й щільна, має темно-коричневий маслянистий колір. Сорт відрізняється великим листям темно-зеленого кольору, звідси і назва. Зі збору цього ж куща виготовляють знамениті Я Ши Сян Дан Цун та Шуй Сян. Чай виготовлений за технологією Цин Сян, що слабким ступенем пропіканням на вогні, при якому залишається «трав'янистість» і зберігається більше корисних речовин."
+},
+{
+"id": "t25",
+"name": "Витриманий Шен Пуер Лінцан 2015 (Мін Цян Лао Шен Ча ) фабр",
+"type": "Шен пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Екстраверт",
+"art": "#Shen2",
+"desc": [
+"Димний",
+"Тютюн",
+"Ягідний"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 35мл",
+"temp": "90–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "Для тих, хто хоче смакувати кожен злив і ділитися враженнями. Потужний стан, п'янкий, багатий на смакоароматику. Димний і табачний шен з кисло-солодкими нотами — довго п'ється.",
+"about": "2015 Лінцан, Юннань, Витриманий шен, сухе дозрівання. Культивар Sinensis var Camelia (зубчики по краяъ листа+розмір). Мао ча на сухому дозріванні, збір до фестивалю ЦінМін (зібраний до 5 квітня - перший збір ). Димний/табачний шен з кисло-солодкими нотами, довго п’ється. Екстраверт Чай якщо хочеться смакувати посмак, бути уважним до кожного проливу, ділитися враженнями щодо цього. Потужний стан, п’янкий, багатий на смакоароматику."
+},
+{
+"id": "t26",
+"name": "є шен фен цін хун ча",
+"type": "Червоний",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "без артикулу",
+"desc": [
+"Липовина",
+"Солона карамель",
+"Здоба",
+"Печені яблука"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "згідно постера",
+"temp": "85–95°C",
+"infusions": "7",
+"pour": "Швидкий",
+"comment": "",
+"about": "повна назва чаю, означає що це червоний дикий з Фен Ціну. \"Дикисть\" можна транспорентно ідентифікувати з першого погляду - довжина листочка може сягати 5-6 сантиметрів. Для цього красеня найкраще використовувати як простору гайвань, адже він потребує місця для якісного розкриття, так і теплоємний чайник з ісіну, який \"достане\" весь потенціал сировини. Що ще особливого про цей чай : поєднання чистоти стану та прозорості в смакоароматичному профілі. Ye Sheng Feng Qing Hong Cha 25' - справжній дикий. Медовий яскравий аромат липи зустрічає та переходить в екзотичну пряну палітру з акцентами соленої карамелі, здоби, печених карамелізованих яблук. Тільний настій, багатий, відчувається насиченою присутністю. Сировина з малих тонких листочків з пагінцем, повздовжною скруткою схожи на малі чорні стріли. Тримає чіткий та прямий смак протягом всього чаювання, збалансований. Ароматика дуже ефірна: обовязково звертайте увагу на аромат в порожньому теплому посуді опісля випитої піали. Витримує мінімум 7 проливів та уходить в чайне плато."
+},
+{
+"id": "t27",
+"name": "Шен Пуер Прес 2024 (рука шенщіни)",
+"type": "Шен пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Екстраверт",
+"art": "",
+"desc": [
+"Курага",
+"Дюшес",
+"Яблуко",
+"Горіховий"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Схожий на зелений чай. Спресований у млинцях — екстракція плавніша і м'якша порівняно з розсипним. На вечір краще уникати. Підходить як перший крок до знайомства з пуерами.",
+"about": "Юннанська сировина . Не щільна пресовка в кейки. Чай схожий на зелений чай. На вечір може бути заактивний, хібащо поєднювати його з активною діяльністю. Може показатись різким для новачків, адже має багато танінності(терпкості) при перетримці. Так як спресований в млинцях то має не таку різку екстракцію, більш плавний та м’який. Легкий весняний профіль співзвучить з настроєм приходу нового тепла. Ароматика наповнена соковитими переливами стиглих та сушених фруктів: курага, яблуко, дюшес. Крізь все чаювання проходить посмак волоського горіху, який додає трошки стриманості барвистій палітрі смаку. Тривалий чай, але при тому дуже легко п'ється. Прозорий настій кольору білого виноградного соку. Допоможе перключити стан та звернути увагу на простір навколо, помітити його. Стан про концентрований спокій та увагу."
+},
+{
+"id": "t28",
+"name": "Хей Ча Wild Persimmon",
+"type": "Хейча",
+"region": "Хунань",
+"novice": false,
+"char": "Екстраверт",
+"art": "B1",
+"desc": [
+"Хурма",
+"Сухофрукти",
+"Мигдаль",
+"Вінтажний підвальчик"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 35мл",
+"temp": "90–95°C",
+"infusions": "7",
+"pour": "Повільний",
+"comment": "",
+"about": ""
+},
+{
+"id": "t29",
+"name": "Мі Лань Сян Дан Цун",
+"type": "Улун",
+"region": "Гуандун",
+"novice": true,
+"char": "Екстраверт",
+"art": "без артикулу",
+"desc": [
+"Медовий",
+"Батат",
+"Квітковий",
+"Уішанська мелодія"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "85–90°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "Майже одразу сировина розкриває сильну арома палітру весняним медовим ароматом, з нотами орхідеї та квіту чубушника.Чай - насолода, яка з кожною піалою тільки розкриває свій потенціал. Смак насичений, солодкий і багатогранний - батат, медовість космічна, квіти і все це з характерною даньцунівською тягучістю та тривалим післясмаком. ДумаюДаруе приємний стан прояснення і спокою. Заповільнює думки, очищує. Задоволення.",
+"about": "\"Аромат Медової Орхідеї\", ґуандуньский улун з родини Фен Хуан Дань Цунів (Одинокі Кущі з гір Феніксу). Витончений представник церемоніального китайського чаю, має тонкий і ніжний аромат, за рахунок легкої ступіні прожарювання. Впевнено передає гуандунский теруар з доволі Сировина для цього чаю зібрана з дерев віком 80 років та висотою 3-4 метра. Висота зростання 1100 метрів над рівнем моря. Сухе листя скручене повздовжньо й має сіро-коричневий маслянистий колір."
+},
+{
+"id": "t30",
+"name": "Ченнянь Гунтін фабр",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "#B9",
+"desc": [
+"Камфора",
+"Деревний",
+"Хурма"
+],
+"time": "Ранок–День",
+"vessels": [
+"Чайник"
+],
+"weight": "постер",
+"temp": "95–100°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "Сильний та прямий гунтін. Завдяки бленду з золотими бруньками не такий \"швидкий\" як зазвичай зустріються палацові пуери. Сильноекстрактивний, камфорний, має м'який та солодкий посмак. Пік заварювання приходить плавно, без різких стрибків екстракції між проливами, що звісно залежить від того наскільки є бажання досягати плавності. В середені чаювання з'являється терпчинка схожа на відчуття після смакування хурмою. Шоколадно-дерев'яний профіль з алкогольною ноткою. По стану не підривний, помірно активний, концентруючий. Гарно включає в день та його процеси."
+},
+{
+"id": "t31",
+"name": "Бін Фа Си Цзи Чунь ice fermented",
+"type": "Улун",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#2",
+"desc": [
+"Ягідний",
+"Фруктовий",
+"Солодкий",
+"Цитрусовий"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "",
+"about": "Холодна ферментація: Екзотика червоних чаїв, персики/маракуя. Настій прозорий з ворсом. Медова, мяка та округла, насичений соковий довготривалий посмак, питка. 1-2 піала - відчутний потужний стан. Чай багатий на ароматику - глибокий парфюмний екзотичний букет. Цільний лист прямої повздовджньої скрутки. Сильно окислений."
+},
+{
+"id": "t32",
+"name": "Цзи Я бао 2025",
+"type": "Білий",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "",
+"desc": [
+"Молотий перець",
+"Журавлина",
+"Лимонна кислинка",
+"Кизил"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань",
+"Чайник"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "9",
+"pour": "Повільний",
+"comment": "",
+"about": "Надзвичайно ароматний чай. Відкривається тонким свіжим духмяним солодким перцем. Поступово відчувається лимонний тортик з смородиновим джемом. Прозорий блідо-зелений, а ближче до середини чаювання охристий ворсистий чайний настій. Явними стають дискриптори журавлини, смородини та кизилу з нотами солодкої вологої деревини. Можна почути травянисту солодкість ехінацеї. Проливається цей чай безкінечно довго, пікові проливи припадають на шосте на сьоме заварювання. Стан з кожним новим ковтком тільки посилюється, Я Бао проведе настільки глибоко на скільки ви того захочете. Дарує відчуття занурення ніби знаходишся в квітучому полі, яке все гудить від звуків збирачів меду. Робіть зупинки і не поспішайте, чай дуже питкий та тривалий, хоча тіло чаю дуже легке і збалансоване."
+},
+{
+"id": "t33",
+"name": "Майстер Го",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": true,
+"char": "Екстраверт",
+"art": "без артикулу",
+"desc": [
+"Горіховий",
+"Шипшина",
+"Шоколад"
+],
+"time": "Будь-який",
+"vessels": [
+"Чайник"
+],
+"weight": "постер",
+"temp": "95–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "",
+"about": "Потужна горіхова ароматика навіть через бамбукові туни та паперову обгортку. Тільний, плотний, кисло-солодкий горіховий профіль. Плотна екстракція, чиста і м'яка композиція. Цей чай для поціновувачів мистецтва в області шу пуеру. А якщо ви знами досліджуєте цю четверту ітерацію горіхового шу - для вас є приємна цікавинка, якою відрізняється саме цей лот. Третій пролив - пік екстракції, але після неї чай не здувається як пробита кулька а тримає потенціал ще добрії 3-4 нафтових проливи і плавно уходить в закат як Клінт Іствуд в тому кіно про пустелю. Стан - чиста енергія життя."
+},
+{
+"id": "t34",
+"name": "GABA ДФМЖ Пумен",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#7",
+"desc": [
+"Злаки",
+"Вершковий",
+"Ягідний"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "Пшениця, овес, ячмінь в поєднанні з фруктовою вершковістю (злаковий йогурт). М’яка та збалансована. 3-4 проливи виходить в плато вершковості та ягідності та до 7-8 пролива на ньому перебуває. Настій чистий, прозорий. Заварювати можна як в гайвані так і в широкому чайнику : головне забезпечити площу для розкриття скрученого листа."
+},
+{
+"id": "t35",
+"name": "Шен Хун Гун Юань фабр",
+"type": "Шу пуер",
+"region": "Юньнань",
+"novice": false,
+"char": "Екстраверт",
+"art": "#B8",
+"desc": [
+"Курага",
+"Сухофрукти",
+"Чорнослив",
+"Бренді",
+"Солодка деревина"
+],
+"time": "Ранок–День",
+"vessels": [
+"Чайник"
+],
+"weight": "постер",
+"temp": "95–100°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "М'який та повнотілий, має аромат гарного \"шупуерного\" сухофрукту в якому курага та чорнослив грають солодкими сполуками. Баланс екстракції та настою збережений. Напрочуд потужна залишкова ароматика в прогрітому посуді. Зустрічаються статусні нотки витриманого бренді. Тепла солодка деревина в посмаку відкриває саме дубову бочку з бренді та відтворює шарм цієї фруктової браги. Стан є. Читається як відчутний тонус з помірним розфокусом переферійної уваги."
+},
+{
+"id": "t36",
+"name": "GABA Хун Ча Є Шен Гу Шу ПХП",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#3",
+"desc": [
+"Цитрусовий",
+"Ягідний",
+"Тютюн",
+"Томати"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "",
+"about": "ЗЛИВАТИ МЕГАШВИДКО! суперекстрактивний. мяка кислинка, огортаюча. виражена смаженість, тютюновість, томатна нота. в ароматиці багатий - екзотична парфумність. Настій золотистий, багряний при перезаварюванні, ворсистий. Чай який повторювати не будем, занадто сильна розкореляція ціни-якості та досвіду від чаювання."
+},
+{
+"id": "t37",
+"name": "GABA Си цзи Чунь HQ",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#4",
+"desc": [
+"Вершковий",
+"Ягідний",
+"Фруктовий",
+"Медовий"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "7",
+"pour": "Нормальний",
+"comment": "",
+"about": "Ціна/якість - одна з кращіх в тайських екземплярах. Вершковість, багато лактози в поєднанні з плодовим тілом та ягідністю. Соковитий : тривалий солодкий посмак, що накопичується. При перезаварюванні не йде в дефективність. Колір настою бронзовий/золотисто-червоний. Екстракція помірна. Комплексний чай."
+},
+{
+"id": "t38",
+"name": "GABA ДФМЖ ААА HQ",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#6",
+"desc": [
+"Бузок",
+"Кокос",
+"Ваніль",
+"Ягідний",
+"Лічі",
+"Мінерали"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–95°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "",
+"about": "Сильний чай, найпотужний з партії. Ароматика дуже глибока, соковиті парфумні ноти, ефірний чай. Складений з багатьох різних дескрипторів: бузок (гліцинія) , лічі , кокос, лісова ягода, мінеральність (сіль). Посмак насичений, інтенсивний, соковитий. Питкий. Дуже якісна сировина (можна на цьому акцентувати/розглядати тіло після чаювання) : молоді верхівки чайкого куща брунька + 2 молодих листочка ."
+},
+{
+"id": "t39",
+"name": "Бі Ло Чунь 2026",
+"type": "Зелений",
+"region": "Сичуань",
+"novice": true,
+"char": "Екстраверт",
+"art": "без артикулу",
+"desc": [
+"Квітковий",
+"Флоральний",
+"Крем-брюле",
+"Кавун"
+],
+"time": "Ранок–День",
+"vessels": [
+"Гайвань"
+],
+"weight": "згідно постеру",
+"temp": "80–85°C",
+"infusions": "6",
+"pour": "Швидкий",
+"comment": "",
+"about": "Сичуаньський Бі Ло Чунь 2026 року. Чай, що дихає свіжістю та випереджає на декілька тижнів збір з Дунтіну. Довгоочікуваний весняний збір. Цей чай знамений своїми чотирма особливостями – красивою формою чаїнок, золотистим настоєм, квітково-фруктовим ароматом і оригінальним смаком. Зелений чай багатий на катехіни, які є органічними речовинами і найсильнішими антиоксидантами. Також у зеленому чаї багато поліфенолів - хімічні сполуки, які ще трапляються у фруктах та овочах. Корисні властивості зеленого чаю дають позитивний ефект, якщо ви п'єте його регулярно, особливо якщо це свіжі перші збори весняного зеленого чаю. Не варто вживати зелений чай перед сном. Складна формула чайного кофеїну (танатокофеїн або теїн), який міститься в листі, запускає реакцію збудження в організмі, тому може провокувати відсутність сну. Для справжнього Бі Ло Чунь збирають лише найніжнішу бруньку та один ледь розкритий листочок. На 1 кілограм готового чаю може знадобитися до 140 000 таких бруньок. Сичуанські фермери використовують місцеві культивари (часто це E-Cha No.10 або місцеві різновиди Qunti), які адаптовані до туманного клімату гірських районів. Листя сичуанського варіанту не має такого яскравовираженого скручування порівняно з Бі Ло Чунь з Чзянсу."
+},
+{
+"id": "t40",
+"name": "є шен сяо чжун",
+"type": "Червоний",
+"region": "Фуцзянь",
+"novice": true,
+"char": "Екстраверт",
+"art": "R2-R3",
+"desc": [
+"Кориця",
+"Здоба",
+"Вишня"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "згідно постеру",
+"temp": "90–95°C",
+"infusions": "5",
+"pour": "Нормальний",
+"comment": "",
+"about": "Дикорослий червоний чай з гірського району У І Шань. Є Шен - класифікація сировини з дикорослих дерев, тобто сировина на виготовлення такого чаю закуповується або збирається в регіоні «чайних джунглів» Чайні кущі тут ніколи не оброблялися, їх не удобрювали хімікатами бо в цьому просто немає потреби - сильне коріння диких дерев і кущів здатно самостійно задовільняти свої потреби завдяки потужні корньовій системі. Заварити легко скрізь: у гайвані, чайнику, термосі або зварити по Лу Ю Ю. Має прозорий з золотисто-червоним колір настою. Добротний повнотілий чай. Яскравий смак і аромат. Аромат яскравий, густий, в сухому вигляді - вишнева кислинка, здоба, кориця Впродовж чаювання кислинка, ноти прянощів, гіркого шоколаду з ароматами сушеної вишні, чорносливу, кураги і фруктової кісточки. За пряність відповідають ноти перцю та гвоздики. І тільки у спитому листі яскраво виділяються копчені та табачні ноти. Смак солодкий, медовий з легкою кислинкою сушених ягід. Посмак свіжий, солодкий, тривалий, не інтенсивний. Настій прозорий, світло-жовтий, жовто-бурштиновий. Тонізує, дарує наповнючий стан, зігріває, затишний. Недарма його так полюбляють в багатьох країнах європи та називають чорним чаєм або ще краще \"Лапсанг Сушонг\""
+},
+{
+"id": "t41",
+"name": "GABA Хун Бао Ши Мі Сян смажена",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Інтроверт",
+"art": "GB#5",
+"desc": [
+"Кавове зерно",
+"Фруктовий",
+"Тютюн"
+],
+"time": "Вечір",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90°C",
+"infusions": "6",
+"pour": "Нормальний",
+"comment": "",
+"about": "Смажена габа типу Ге Гуань Їнь Тан Бей тайванської версії обсмажки. Сильний чай, екзотична флоральність , з помірної кислотності. Чай читається та п’ється та читається як гарні сорти кави з африканських країн (більш кислотні) методом альтернативного заварювання або через фільтр-машину. Тютюнові нотки, ароматика в піалі - глибока і комплексна флоральність та фрукти, однотипна."
+},
+{
+"id": "t42",
+"name": "GABA Гу Шу Бай Ча Є Шен ПХП",
+"type": "GABA",
+"region": "Тайланд",
+"novice": true,
+"char": "Екстраверт",
+"art": "GB#1",
+"desc": [
+"Коріандр",
+"Лемонграс",
+"Томати",
+"Масло чорного тмину"
+],
+"time": "Будь-який",
+"vessels": [
+"Гайвань"
+],
+"weight": "1г / 40мл",
+"temp": "90–100°C",
+"infusions": "8",
+"pour": "Нормальний",
+"comment": "",
+"about": "Комплексний та багатий смак та аромат . Поєднює в собі пряність кореандру + бородинську хлібність з лемонграсовою кислинкою в сухому вигляді. При цьому ароматика на стадії знайомства розкривається з різних сторін в залежності від ступіню прогрітості сировини. Перша піала (смак) поєднює одразу всі дескриптори, що були в ароматиці, дублюючи їх , але поєднуючи в одну картину, при цьому кожен з них дуже чітко читається в смаку. Кислинка нагадує домашні жовті солодкі помідори з притаманній їм солодкістю. Стан дуже плавний рівний та сильний. Якщо потримати подовше з’являється більше гостроти чорного перцю (домінувати починає пряність) . Головний складний дексриптор - масло чорного кмину. Не боїться високих температур, заварюється рівномірно. В чахаї є димна солодка нота - пересмажений попкорн/підгорівший цукор. Колір настою - оливкова олія."
+}
+];
+</script>
+<script>
+const TX={
+"title": "Чайна зала",
+"tagline": "Підбери кожному гостю його чай",
+"btn_continue": "Продовжити гру",
+"btn_new": "Нова гра",
+"btn_dex": "Довідник чаїв",
+"btn_how": "Як грати",
+"best_line": "Найкращий рахунок: {n}",
+"btn_menu": "Меню",
+"aria_home": "Вийти в меню. Гру збережено",
+"lvl_normal": "Рівень {level}, до нового чаю {p}/{per}",
+"prog_normal": "У меню {m} з {total}",
+"lvl_endless": "Безкінечний режим",
+"prog_endless": "Усі чаї у меню, гостей: {n}",
+"aria_lives": "Життя: {n} з {max}",
+"aria_patience": "Терпіння: {n} з {max}",
+"aria_hidden": "Прихований пункт",
+"aria_tried": "уже пробували",
+"aria_search": "Пошук",
+"tray_title": "Твоє меню",
+"toggle_easy": "Підказки на картках",
+"filter_all": "Усі",
+"search_name": "Пошук за назвою",
+"search_deep": "Пошук за назвою, смаком, регіоном",
+"empty": "Нічого не знайдено. Зміни фільтр.",
+"msg_start": "Торкнись картки чаю, щоб побачити деталі й подати його гостю.",
+"msg_wrong": "«{tea}» не підійшов.",
+"msg_mismatch": "Не збігається: {list}.",
+"msg_revealed": "Гість уточнив: {trait}.",
+"msg_win": "«{tea}» — саме те! +{pts}",
+"msg_perfect": "Із першої спроби.",
+"msg_life": "Життя повернулось: +♥.",
+"msg_lose": "Терпіння скінчилось, гість пішов. Йому підійшов би «{tea}».",
+"stamp_win": "Смачно!",
+"stamp_lose": "Пішов",
+"btn_next": "Наступний гість",
+"btn_summary": "Підсумок",
+"need_label": "Гість хоче",
+"btn_serve": "Подати гостю",
+"btn_tried": "Цей чай уже пробували",
+"btn_close": "Закрити",
+"btn_ok": "Зрозуміло",
+"btn_to_guests": "До гостей",
+"label_novice": "Для новачків",
+"prop_time": "Час доби",
+"prop_vessel": "Посуд",
+"prop_weight": "Вага",
+"prop_temp": "Температура",
+"prop_infusions": "Проливи",
+"prop_pour": "Злив",
+"about_h": "Про чай",
+"unlock_new_title": "Меню поповнилось",
+"unlock_new_body": "У меню з’явився новий чай. Знайди його серед карток.",
+"unlock_last_title": "Усі чаї відкрито",
+"unlock_last_body": "Останній чай додано до меню. Тепер гра безкінечна, доки не скінчаться життя.",
+"dex_title": "Довідник чаїв",
+"btn_back": "Назад",
+"over_title": "Чайна зала зачиняється",
+"over_record": "Новий рекорд",
+"stat_score": "Рахунок",
+"stat_served": "Обслужено гостей",
+"stat_menu": "Чаїв у меню",
+"stat_menu_value": "{m} з {total}",
+"stat_perfect": "З першої спроби",
+"stat_best": "Найкращий рахунок",
+"btn_again": "Нова гра",
+"btn_home": "Головне меню",
+"howto_title": "Як грати",
+"howto_1": "Гість приходить із побажаннями: смак, регіон, а також температура води 🌡 і кількість проливів 🔁. Пункт «???» прихований, гість розкриє його, коли ти помилишся.",
+"howto_2": "Обери категорію чаю. З’являться маленькі картки: «Інфо» показує деталі, «Подати» дає чай гостю, ✕ закриває список.",
+"howto_3": "Кожна помилка забирає терпіння ☕ і розкриває один прихований пункт. Коли терпіння скінчилось, гість іде, і ти втрачаєш ♥.",
+"howto_4": "Кожні {per} обслужених гостей у меню з’являється новий чай. Коли відкриті всі, починається безкінечний режим.",
+"howto_5": "Кожні {perfects} гостей, обслужених із першої спроби, повертають одне життя.",
+"howto_6": "Після правильного чаю можна заварити його: обрати температуру води й кількість проливів. Це бонусні бали.",
+"trait_temp": "Вода {v}°C",
+"trait_pours": "Від {v} проливів",
+"trait_pourtype": "Злив: {v}",
+"vip_name": "Чайний критик",
+"vip_av": "🧐",
+"vip_badge": "Критик: подвійні бали",
+"msg_vip": "Прийшов чайний критик! Терпіння менше, зате бали подвійні.",
+"btn_brew": "Заварити чай і отримати бонус",
+"btn_skip": "Пропустити",
+"btn_info": "Інфо",
+"btn_tried_short": "Вже було",
+"cat_empty": "У цій категорії поки немає чаїв у твоєму меню.",
+"brew_title": "Заварювання: {tea}",
+"brew_q_temp": "Яка температура води потрібна цьому чаю?",
+"brew_q_pours": "Скільки проливів витримує цей чай?",
+"brew_temp_ok": "Температура {v}°C підходить. Правильний діапазон: {range}.",
+"brew_temp_bad": "Температура {v}°C не підходить. Правильно: {range}.",
+"brew_pours_ok": "Проливи: {v}. Точно!",
+"brew_pours_near": "Проливи: {v}. Майже, чай витримує {n}.",
+"brew_pours_bad": "Проливи: {v}. Насправді чай витримує {n}.",
+"brew_total": "Бонус за заварювання: +{pts}",
+"howto_7": "Іноді приходить чайний критик: терпіння менше, зате бали подвійні.",
+"howto_8": "Гру збережено автоматично. Працює без інтернету.",
+"visitor_1_av": "👨",
+"visitor_1_name": "Олександр",
+"visitor_2_av": "👨",
+"visitor_2_name": "Андрій",
+"visitor_3_av": "👨",
+"visitor_3_name": "Сергій",
+"visitor_4_av": "👨",
+"visitor_4_name": "Дмитро",
+"visitor_5_av": "👨",
+"visitor_5_name": "Іван",
+"visitor_6_av": "👨",
+"visitor_6_name": "Микола",
+"visitor_7_av": "👨",
+"visitor_7_name": "Василь",
+"visitor_8_av": "👨",
+"visitor_8_name": "Петро",
+"visitor_9_av": "👨",
+"visitor_9_name": "Богдан",
+"visitor_10_av": "👨",
+"visitor_10_name": "Тарас",
+"visitor_11_av": "👩",
+"visitor_11_name": "Оксана",
+"visitor_12_av": "👩",
+"visitor_12_name": "Олена",
+"visitor_13_av": "👩",
+"visitor_13_name": "Марія",
+"visitor_14_av": "👩",
+"visitor_14_name": "Софія",
+"visitor_15_av": "👩",
+"visitor_15_name": "Анна",
+"visitor_16_av": "👩",
+"visitor_16_name": "Катерина",
+"visitor_17_av": "👩",
+"visitor_17_name": "Ірина",
+"visitor_18_av": "👩",
+"visitor_18_name": "Наталія",
+"visitor_19_av": "👩",
+"visitor_19_name": "Юлія",
+"visitor_20_av": "👩",
+"visitor_20_name": "Христина",
+"visitor_21_av": "👨",
+"visitor_21_name": "Wang Wei",
+"visitor_22_av": "👩",
+"visitor_22_name": "Li Na",
+"visitor_23_av": "👩",
+"visitor_23_name": "Zhang Min",
+"visitor_24_av": "👨",
+"visitor_24_name": "Liu Yang",
+"visitor_25_av": "👩",
+"visitor_25_name": "Chen Jing",
+"visitor_26_av": "👨",
+"visitor_26_name": "Yang Fan",
+"visitor_27_av": "👨",
+"visitor_27_name": "Zhao Lei",
+"visitor_28_av": "👩",
+"visitor_28_name": "Huang Ting",
+"visitor_29_av": "👨",
+"visitor_29_name": "Zhou Jie",
+"visitor_30_av": "👩",
+"visitor_30_name": "Wu Qian",
+"visitor_31_av": "👨",
+"visitor_31_name": "Xu Peng",
+"visitor_32_av": "👩",
+"visitor_32_name": "Sun Li",
+"visitor_33_av": "👨",
+"visitor_33_name": "Ma Chao",
+"visitor_34_av": "👩",
+"visitor_34_name": "Zhu Lin",
+"visitor_35_av": "👨",
+"visitor_35_name": "Hu Jun",
+"visitor_36_av": "👩",
+"visitor_36_name": "Guo Yan",
+"visitor_37_av": "👨",
+"visitor_37_name": "He Wei",
+"visitor_38_av": "👨",
+"visitor_38_name": "Gao Xiang",
+"visitor_39_av": "👩",
+"visitor_39_name": "Lin Fang",
+"visitor_40_av": "👨",
+"visitor_40_name": "Luo Chen",
+"greeting": "Вітаю, я хочу:",
+"btn_mini": "Міні-ігри",
+"mini_title": "Міні-ігри",
+"mini_sub": "Тренуй знання про чаї без гостей і без життів.",
+"mini_best": "Рекорд: {n}",
+"mg_exit": "Вийти",
+"mg_again": "Ще раз",
+"mg_home": "До міні-ігор",
+"mg_done_title": "Гру завершено",
+"mg_new_record": "Новий рекорд!",
+"mg_res_score": "Рахунок",
+"mg_res_mist": "Помилок",
+"mg_res_best": "Найкращий рахунок",
+"mg_next": "Далі",
+"mg_check": "Перевірити",
+"mg_right": "Правильно!",
+"mg_wrong": "Не зовсім.",
+"mg_sort_title": "Сортування",
+"mg_sort_desc": "Розклади чаї по кошиках за правилом. П’ять карток, три правила.",
+"mg_sort_rule": "Розклади за: {rule}",
+"mg_sort_where": "Куди покласти цей чай?",
+"mg_sort_wrong": "Ні. Правильний кошик: {bin}.",
+"rule_type": "типом",
+"rule_region": "регіоном",
+"rule_char": "характером",
+"rule_novice": "придатністю для новачків",
+"rule_time": "часом доби",
+"rule_pour": "зливом",
+"rule_temp": "температурою води",
+"rule_pours": "кількістю проливів",
+"bin_novice_yes": "Для новачків",
+"bin_novice_no": "Не для новачків",
+"bin_temp_low": "Нижче 90°C",
+"bin_temp_high": "90°C і вище",
+"bin_pours_low": "До 6 проливів",
+"bin_pours_high": "7 і більше проливів",
+"mg_match_title": "Пари",
+"mg_match_desc": "З’єднай чаї з їхніми властивостями.",
+"mg_match_rule": "З’єднай чай і {what}.",
+"match_temp": "температуру води",
+"match_pours": "кількість проливів",
+"match_region": "регіон",
+"match_type": "тип",
+"val_pours": "{n} проливів",
+"mg_match_hint": "Торкнись чаю, а потім його пари.",
+"mg_match_ok": "Пара!",
+"mg_match_bad": "Не пара.",
+"mg_tech_title": "Технологічна картка",
+"mg_tech_desc": "Відновлюй втрачені дані на картках чаїв.",
+"mg_tech_card": "Технологічна картка",
+"mg_tech_fill": "Обери правильні значення для пунктів «???».",
+"mg_tech_result": "Правильно: {ok} з {n}.",
+"mg_odd_title": "Зайвий чай",
+"mg_odd_desc": "Три чаї мають щось спільне. Знайди четвертий.",
+"mg_odd_q": "Три чаї мають щось спільне. Який зайвий?",
+"odd_type": "тип — {v}",
+"odd_region": "регіон — {v}",
+"odd_char": "характер — {v}",
+"odd_novice": "усі підходять новачкам",
+"odd_desc": "смак — {v}",
+"odd_pour": "злив — {v}",
+"odd_time": "час доби — {v}",
+"mg_odd_common": "Спільне в трьох: {what}. Зайвий — «{tea}».",
+"mg_guess_title": "Вгадай чай",
+"mg_guess_desc": "Впізнай чай за трьома ознаками.",
+"mg_guess_q": "Який чай має всі ці ознаки?",
+"mg_guess_reveal": "Це «{tea}».",
+"mg_order_title": "Сходинки",
+"mg_order_desc": "Впорядкуй чаї за проливами й температурою.",
+"mg_order_q_pours": "Впорядкуй чаї від найменшої кількості проливів до найбільшої.",
+"mg_order_q_temp": "Впорядкуй чаї від найнижчої температури до найвищої.",
+"mg_order_tap": "Торкайся чаїв по порядку.",
+"mg_order_ok": "Порядок правильний!",
+"mg_order_bad": "Ні, спочатку йде чай із меншим значенням.",
+"howto_9": "У розділі «Міні-ігри» можна тренувати знання про чаї без гостей і без життів.",
+"btn_learn": "Навчання",
+"learn_title": "Навчання за категоріями",
+"learn_sub": "Крок за кроком: вивчаєш кожен чай, розрізняєш чаї в групі й складаєш іспит категорії.",
+"learn_known": "Вивчено чаїв (три зірки): {n} з {total}",
+"learn_progress": "Зірок: {stars} з {max}",
+"cat_teas": "Чаїв: {n}",
+"cat_continue": "Продовжити",
+"cat_steps": "Кроки категорії",
+"row_overview": "Огляд категорії",
+"row_overview_sub": "Що об’єднує чаї цієї групи",
+"row_compare": "Порівняння в групі",
+"row_compare_sub": "Чим схожі й чим відрізняються",
+"row_exam": "Іспит категорії",
+"row_exam_sub": "Розрізни чаї групи",
+"row_exam_best": "Найкращий результат: {n} з {total}",
+"row_start": "Почати",
+"row_repeat": "Повторити",
+"cat_single": "У цій категорії один чай, тому порівняння й іспит недоступні.",
+"lesson_exit": "Вийти",
+"lesson_next": "Далі",
+"lesson_back": "Назад",
+"lesson_finish": "Завершити",
+"lesson_check": "Перевірити",
+"lr_title": "Урок завершено",
+"lr_cloze": "Пропуски",
+"lr_quiz": "Запитання",
+"lr_stars": "Зірки",
+"lr_again": "Пройти ще раз",
+"lr_to_cat": "До категорії",
+"lr_verdict": "Результат",
+"lr_exam_pass": "Іспит складено!",
+"lr_exam_fail": "Потрібно щонайменше {need} з {n}. Спробуй ще раз.",
+"page_who": "Хто це",
+"page_taste": "Смак і аромат",
+"page_brew": "Заварювання",
+"page_when": "Кому й коли радити",
+"page_story": "Про чай",
+"page_pitch": "Як розповісти гостю",
+"taste_tip": "Запам’ятай два-три головні смаки цього чаю.",
+"brew_tip": "Ці числа треба знати напам’ять: температура, проливи, злив.",
+"pitch_hint": "Прочитай уголос своїми словами, а потім перевір себе на пропусках і запитаннях.",
+"pitch_who": "«{name}». Тип — {type}, регіон — {region}",
+"pitch_char": ", характер — {char}",
+"pitch_taste": "На смак і аромат: {list}.",
+"pitch_brew": "Заварюємо так: {parts}.",
+"pp_vessel": "посуд — {v}",
+"pp_weight": "порція {v}",
+"pp_temp": "вода {v}",
+"pp_pours": "до {v} проливів",
+"pp_pour": "злив — {v}",
+"pitch_when": "Найкраще пити: {time}.",
+"pitch_novice_yes": "Підходить новачкам.",
+"pitch_novice_no": "Краще для досвідчених.",
+"form_intro": "Відтвори з пам’яті: обери правильні значення.",
+"form_result": "Правильно: {ok} з {n}.",
+"f_region": "Регіон",
+"f_taste": "Один зі смаків цього чаю",
+"f_char": "Характер",
+"f_tastes": "Смак",
+"f_novice": "Для новачків",
+"ans_yes": "Так",
+"ans_no": "Ні",
+"fb_right": "Правильно!",
+"fb_wrong": "Не зовсім. Правильно: {ans}.",
+"q_region": "Із якого регіону «{tea}»?",
+"q_char": "Який характер у «{tea}»?",
+"q_taste": "Який із цих смаків має «{tea}»?",
+"q_temp": "Яка температура води для «{tea}»?",
+"q_pours": "Скільки проливів витримує «{tea}»?",
+"q_pour": "Який злив у «{tea}»?",
+"q_vessel": "У чому заварюємо «{tea}»?",
+"q_time": "Коли краще пити «{tea}»?",
+"q_novice": "Чи підходить «{tea}» новачкам?",
+"q_diff": "Що є правдою про «{a}», але не про «{b}»?",
+"diff_desc": "має смак «{v}»",
+"diff_region": "регіон — {v}",
+"diff_char": "характер — {v}",
+"diff_temp": "температура — {v}",
+"diff_pours": "проливів: {v}",
+"diff_pour": "злив — {v}",
+"diff_novice_yes": "підходить новачкам",
+"diff_novice_no": "не для новачків",
+"exam_guess": "Який чай групи має всі ці ознаки?",
+"ov_common": "Що об’єднує групу",
+"ov_count": "Чаїв у групі: {n}.",
+"ov_regions": "Регіони: {list}.",
+"ov_temp": "Вода: від {lo} до {hi}°C.",
+"ov_pours": "Проливи: від {lo} до {hi}.",
+"ov_taste": "Найчастіші смаки: {list}.",
+"ov_novice": "Для новачків: {n} з {total}.",
+"ov_char": "Інтровертів: {a}, екстравертів: {b}.",
+"ov_members": "Хто в групі",
+"ov_member": "{name}: {region}, вода {temp}, проливів: {n}",
+"oq_region": "Який регіон найчастіше зустрічається в категорії «{type}»?",
+"oq_taste": "Який смак найчастіший у категорії «{type}»?",
+"oq_novice": "Скільки чаїв категорії «{type}» підходять новачкам?",
+"cmp_title": "«{a}» і «{b}»",
+"cmp_hint": "Відмінності виділено кольором. Запам’ятай, за чим їх розрізняти.",
+"howto_10": "У розділі «Навчання» кожна категорія має уроки: вивчаєш чаї, порівнюєш їх у групі й складаєш іспит."
+};
+</script>
+<script>
+(function(){
+'use strict';
+
+const CFG={PER_LEVEL:20,DIFF_EVERY:10,START:2,LIVES:5,PATIENCE:3,PERFECTS_FOR_LIFE:5,BREW_PTS:15,VIP_CHANCE:.12,VIP_FROM_TIER:3,VIP_PATIENCE:2};
+const KEY='chaina-zala-save-v1',BEST='chaina-zala-best-v1',EASY='chaina-zala-easy-v1';
+
+const STYLE={'Червоний':['❤️','#c4453a'],'Білий':['🤍','#d8d3c4'],'Зелений':['💚','#5fa86a'],'Жовтий':['💛','#dbb83f'],
+  'Улун':['🪨','#c98544'],'Шу пуер':['🟤','#8a5f4b'],'Шен пуер':['🍃','#4f86ad'],'Хейча':['🪖','#8a68a3'],'GABA':['🌸','#c05f8b']};
+const KIND_ICON={type:'🍃',region:'📍',novice:'🔰',char:'🎭',desc:'👅',time:'🕒',vessel:'🫖',temp:'🌡',pours:'🔁',pourtype:'💧'};
+const KIND_ORDER=['novice','type','region','char','desc','time','vessel','temp','pours','pourtype'];
+const NUMERIC=['temp','pours'];
+const tx=(k,v)=>{const s=TX[k];if(s==null)return k;return v?s.replace(/\{(\w+)\}/g,(m,x)=>x in v?v[x]:m):s;};
+const PEOPLE=[],SAY=[];
+for(let i=1;TX['visitor_'+i+'_name'];i++)PEOPLE.push([TX['visitor_'+i+'_av']||'🙂',TX['visitor_'+i+'_name']]);
+for(let i=1;TX['say_'+i];i++)SAY.push(TX['say_'+i]);
+if(!PEOPLE.length)PEOPLE.push(['🙂','Гість']);
+if(!SAY.length)SAY.push('');
+
+const $=s=>document.querySelector(s);
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')';};
+const store={
+  get(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(k);}catch(e){}}
+};
+const buzz=ms=>{try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){}};
+
+/* ---------- дані ---------- */
+const BYID={};
+TEAS.forEach(t=>{
+  t.dl=t.desc.map(d=>d.toLowerCase());BYID[t.id]=t;
+  const m=String(t.temp||'').match(/\d+/g);
+  t.tlo=m?+m[0]:null;t.thi=m?+m[m.length-1]:null;
+  t.pn=parseInt(t.infusions,10)||null;
+});
+const style=t=>STYLE[t.type]||['🍵','#7ba8a0'];
+
+/* ---------- стан ---------- */
+let S=null;
+const menuSize=()=>Math.min(TEAS.length,CFG.START+Math.floor(S.served/CFG.PER_LEVEL));
+const level=()=>1+Math.floor(S.served/CFG.PER_LEVEL);
+const endless=()=>menuSize()>=TEAS.length;
+const menuTeas=()=>S.order.slice(0,menuSize()).map(id=>BYID[id]);
+
+function newOrder(){
+  const o=shuffle(TEAS.map(t=>t.id));
+  if(o.length>1&&BYID[o[0]].type===BYID[o[1]].type){
+    const j=o.findIndex((id,i)=>i>1&&BYID[id].type!==BYID[o[0]].type);
+    if(j>1){const x=o[1];o[1]=o[j];o[j]=x;}
+  }
+  return o;
+}
+function freshState(){return{order:newOrder(),served:0,lives:CFG.LIVES,score:0,streak:0,perfects:0,visitor:null,phase:'play',pendingUnlock:null,lastTea:null,brewed:false};}
+function save(){
+  store.set(KEY,{order:S.order,served:S.served,lives:S.lives,score:S.score,streak:S.streak,perfects:S.perfects});
+  if(S.score>(store.get(BEST)||0))store.set(BEST,S.score);
+}
+function loadSave(){
+  const d=store.get(KEY);
+  if(!d||!Array.isArray(d.order)||!(d.lives>0))return null;
+  const order=d.order.filter(id=>BYID[id]);
+  TEAS.forEach(t=>{if(!order.includes(t.id))order.push(t.id);});
+  return Object.assign(freshState(),d,{order,visitor:null,pendingUnlock:null,phase:'play',lastTea:null,brewed:false});
+}
+
+/* ---------- логіка гостей ---------- */
+function fits(t,tr){
+  switch(tr.k){
+    case 'type':return t.type===tr.v;
+    case 'region':return t.region===tr.v;
+    case 'novice':return !!t.novice;
+    case 'char':return t.char===tr.v;
+    case 'desc':return t.dl.includes(tr.v);
+    case 'time':return t.time==='Будь-який'||t.time===tr.v;
+    case 'vessel':return t.vessels.includes(tr.v);
+    case 'temp':return t.tlo!=null&&tr.v>=t.tlo&&tr.v<=t.thi;
+    case 'pours':return t.pn!=null&&t.pn>=tr.v;
+    case 'pourtype':return t.pour===tr.v;
+  }
+  return false;
+}
+const label=tr=>tr.k==='novice'?tx('label_novice'):tr.k==='desc'?cap(tr.v):
+  tr.k==='temp'?tx('trait_temp',{v:tr.v}):tr.k==='pours'?tx('trait_pours',{v:tr.v}):tr.k==='pourtype'?tx('trait_pourtype',{v:tr.v}):tr.v;
+const chipText=tr=>KIND_ICON[tr.k]+' '+label(tr);
+
+function traitsOf(t){
+  const a=[];
+  if(t.type)a.push({k:'type',v:t.type});
+  if(t.region)a.push({k:'region',v:t.region});
+  if(t.novice)a.push({k:'novice',v:true});
+  if(t.char)a.push({k:'char',v:t.char});
+  t.dl.forEach(d=>a.push({k:'desc',v:d}));
+  a.push({k:'time',v:t.time==='Будь-який'?pick(['Вечір','Ранок–День']):t.time});
+  t.vessels.forEach(v=>a.push({k:'vessel',v}));
+  if(t.tlo!=null){
+    const opts=[...new Set([t.tlo,t.thi,Math.round((t.tlo+t.thi)/10)*5])].filter(x=>x>=t.tlo&&x<=t.thi);
+    a.push({k:'temp',v:pick(opts)});
+  }
+  if(t.pn)a.push({k:'pours',v:Math.min(t.pn,Math.max(3,t.pn-pick([0,0,1,2])))});
+  if(t.pour)a.push({k:'pourtype',v:t.pour});
+  return a;
+}
+function weightedPick(items,w){
+  let r=Math.random()*w.reduce((a,b)=>a+b,0);
+  for(let i=0;i<items.length;i++){r-=w[i];if(r<=0)return items[i];}
+  return items[items.length-1];
+}
+function makeVisitor(){
+  const menu=menuTeas(),L=1+Math.floor(S.served/CFG.DIFF_EVERY),target=pick(menu);
+  const vip=L>=CFG.VIP_FROM_TIER&&Math.random()<CFG.VIP_CHANCE;
+  let total=Math.min(5,1+Math.floor(L/4)+(Math.random()<.5?1:0));
+  if(vip)total=Math.min(5,total+1);
+  const cands=traitsOf(target),chosen=[];
+  while(chosen.length<total){
+    let pool=cands.filter(c=>!chosen.some(x=>x.k===c.k&&x.v===c.v)&&
+      (c.k==='desc'?chosen.filter(x=>x.k==='desc').length<3:!chosen.some(x=>x.k===c.k)));
+    if(!pool.length)break;
+    if(chosen.length===0&&Math.random()<.5){const np=pool.filter(c=>NUMERIC.includes(c.k));if(np.length)pool=np;}
+    const w=pool.map(c=>1+2*menu.filter(t=>!fits(t,c)).length);
+    chosen.push(Object.assign({},weightedPick(pool,w)));
+  }
+  chosen.sort((a,b)=>KIND_ORDER.indexOf(a.k)-KIND_ORDER.indexOf(b.k));
+  let hidCount=L<3?0:Math.floor((L-1)/6)+(Math.random()<.5?1:0);
+  if(vip)hidCount++;
+  hidCount=Math.min(chosen.length-1,3,hidCount);
+  shuffle(chosen.map((_,i)=>i)).slice(0,hidCount).forEach(i=>{chosen[i].hidden=true;});
+  const [av,name]=vip?[tx('vip_av'),tx('vip_name')]:pick(PEOPLE);
+  const max=vip?CFG.VIP_PATIENCE:CFG.PATIENCE;
+  return{av,name,say:tx('greeting'),vip,traits:chosen,max,patience:max,tried:new Set(),target:target.id};
+}
+
+/* ---------- екрани ---------- */
+function show(id){
+  ['title','game','dex','over','mini','mg','learn','cat','lesson'].forEach(n=>{$('#scr-'+n).hidden=(n!==id);});
+  window.scrollTo(0,0);
+}
+function renderTitle(){
+  const fan=$('.fan');fan.replaceChildren();
+  shuffle(Object.keys(STYLE)).slice(0,3).forEach(k=>{
+    const [g,c]=STYLE[k];
+    const d=el('div','card');d.style.setProperty('--tb',c);d.style.setProperty('--ts',rgba(c,.28));
+    d.append(el('span','pip',g),el('span','cname',k),el('span','pip p2',g));
+    fan.append(d);
+  });
+  $('#b-continue').hidden=!loadSave();
+  const b=store.get(BEST)||0;
+  $('#best-line').textContent=b?tx('best_line',{n:b}):'';
+  show('title');
+}
+
+function chipFor(tr){
+  if(tr.hidden){const c=el('span','chip hid',KIND_ICON[tr.k]+' ???');c.setAttribute('aria-label',tx('aria_hidden'));return c;}
+  const c=el('span','chip'+(tr.fresh?' flip':''),chipText(tr));tr.fresh=false;return c;
+}
+function renderHud(){
+  const h=$('#hearts');h.replaceChildren();
+  for(let i=0;i<CFG.LIVES;i++)h.append(el('span',i<S.lives?'':'lost',i<S.lives?'♥':'♡'));
+  h.setAttribute('aria-label',tx('aria_lives',{n:S.lives,max:CFG.LIVES}));
+  $('#score').textContent=S.score;
+  $('#streak').textContent=S.streak>1?'🔥 '+S.streak:'';
+  if(endless()){
+    $('#bar').style.width='100%';
+    $('#lvl').textContent=tx('lvl_endless');
+    $('#prog').textContent=tx('prog_endless',{n:S.served});
+  }else{
+    const p=S.served%CFG.PER_LEVEL;
+    $('#bar').style.width=(p/CFG.PER_LEVEL*100)+'%';
+    $('#lvl').textContent=tx('lvl_normal',{level:level(),p:p,per:CFG.PER_LEVEL});
+    $('#prog').textContent=tx('prog_normal',{m:menuSize(),total:TEAS.length});
+  }
+}
+function renderVisitor(){
+  const v=S.visitor,box=$('#visitor');box.replaceChildren();
+  box.className='visitor'+(v.vip?' vipcard':'');
+  const top=el('div','v-top');
+  const nm=el('div','v-name');nm.append(el('b','',v.name),el('span','v-say',v.say));
+  if(v.vip)nm.append(el('span','vip',tx('vip_badge')));
+  const cups=el('div','cups');
+  for(let i=0;i<v.max;i++)cups.append(el('span',i<v.patience?'':'lost','☕'));
+  cups.setAttribute('aria-label',tx('aria_patience',{n:v.patience,max:v.max}));
+  top.append(el('span','v-av',v.av),nm,cups);
+  const req=el('ol','reqlist');
+  v.traits.forEach((tr,i)=>{
+    const li=el('li',tr.hidden?'hid':'');
+    li.append(el('span','n',String(i+1)),el('span'+'','t'+(tr.fresh?' flip':''),tr.hidden?KIND_ICON[tr.k]+' ???':chipText(tr)));
+    if(tr.hidden)li.setAttribute('aria-label',tx('aria_hidden'));
+    tr.fresh=false;req.append(li);
+  });
+  const stamp=el('div','stamp');stamp.id='stamp';
+  box.append(top,req,stamp);
+}
+function setMsg(text,cls){
+  const m=$('#msg');m.textContent=text;m.className='msg'+(cls?' '+cls:'');
+}
+function renderNext(){
+  const b=$('#b-next');
+  b.hidden=!(S.phase==='won'||S.phase==='lost'||S.phase==='over');
+  b.textContent=S.phase==='over'?tx('btn_summary'):tx('btn_next');
+  const bb=$('#b-brew'),t=S.lastTea;
+  bb.hidden=!(S.phase==='won'&&!S.brewed&&t&&(t.tlo!=null||t.pn));
+}
+
+/* ---------- категорії чаїв ---------- */
+function typeList(){
+  const known=Object.keys(STYLE).filter(k=>TEAS.some(t=>t.type===k));
+  const extra=[...new Set(TEAS.map(t=>t.type))].filter(k=>!STYLE[k]);
+  return known.concat(extra);
+}
+function buildCats(root,mode){
+  root.replaceChildren();
+  const grid=el('div','cats');
+  typeList().forEach(type=>{
+    const [g,c]=STYLE[type]||['🍵','#7ba8a0'];
+    const b=el('button','cat');b.type='button';
+    b.style.setProperty('--tb',rgba(c,.8));b.style.setProperty('--ts',rgba(c,.26));
+    b.append(el('span','cat-g',g),el('span','cat-n',type));
+    b.onclick=()=>openCategory(type,mode);
+    grid.append(b);
+  });
+  root.append(grid);
+}
+
+/* ---------- шторка ---------- */
+let sheetClose=null;
+function showSheet(o){
+  const head=$('#sheet-head'),body=$('#sheet-body'),foot=$('#sheet-foot');
+  head.replaceChildren();body.replaceChildren();foot.replaceChildren();
+  const x=el('button','x','✕');x.type='button';x.setAttribute('aria-label',tx('btn_close'));x.onclick=()=>closeSheet();
+  head.append(x);
+  if(o.kicker)head.append(el('p','sheet-kicker',o.kicker));
+  const h=el('h2','sheet-title',o.title);h.id='sheet-title';head.append(h);
+  if(o.need){
+    const n=el('div','need');n.append(el('small','',tx('need_label')));
+    const cs=el('div','chips');o.need.traits.forEach(tr=>cs.append(chipFor(tr)));
+    n.append(cs);head.append(n);
+  }
+  if(o.note)body.append(el('p','note',o.note));
+  body.append(o.body);
+  (o.actions||[]).forEach(a=>{
+    const b=el('button',a.cls||'btn',a.label);b.type='button';b.disabled=!!a.disabled;b.onclick=()=>a.fn();foot.append(b);
+  });
+  foot.hidden=!(o.actions&&o.actions.length);
+  $('#sheet').hidden=false;document.body.classList.add('lock');
+  body.scrollTop=0;sheetClose=o.onClose||null;
+  const first=foot.querySelector('button:not(:disabled)')||x;first.focus({preventScroll:true});
+}
+function closeSheet(skipCallback){
+  if($('#sheet').hidden)return;
+  $('#sheet').hidden=true;document.body.classList.remove('lock');
+  const cb=sheetClose;sheetClose=null;if(cb&&skipCallback!==true)cb();
+}
+function detailsNode(t){
+  const f=document.createDocumentFragment();
+  const chips=el('div','chips');
+  [t.type,t.region,t.novice?tx('label_novice'):'',t.char].filter(Boolean).forEach(x=>chips.append(el('span','chip',x)));
+  f.append(chips);
+  if(t.desc.length){const d=el('div','chips');d.style.marginTop='8px';t.desc.forEach(x=>d.append(el('span','chip',cap(x))));f.append(d);}
+  const dl=el('dl','props');
+  [[tx('prop_time'),t.time],[tx('prop_vessel'),t.vessels.join(', ')],[tx('prop_weight'),t.weight],[tx('prop_temp'),t.temp],[tx('prop_infusions'),t.infusions],[tx('prop_pour'),t.pour]]
+    .forEach(([k,v])=>{if(v){dl.append(el('dt','',k),el('dd','',v));}});
+  f.append(dl);
+  if(t.comment)f.append(el('blockquote','quote',t.comment));
+  if(t.about){const a=el('div','about');a.append(el('h3','',tx('about_h')),el('p','',t.about));f.append(a);}
+  return f;
+}
+/* інфо про чай: «Подати» і «Закрити» */
+function openTea(t,o){
+  o=o||{};
+  const canServe=!!(o.serve&&S&&S.phase==='play'&&S.visitor);
+  const tried=canServe&&S.visitor.tried.has(t.id);
+  const actions=[];
+  if(canServe)actions.push({label:tried?tx('btn_tried'):tx('btn_serve'),disabled:tried,fn:()=>{
+    closeSheet(true);
+    const r=serveTea(t);
+    if(r&&r.wrong&&o.back)o.back(r.msg);
+  }});
+  actions.push({label:tx('btn_close'),cls:'btn ghost',fn:()=>closeSheet()});
+  showSheet({kicker:o.title||'',title:t.name,need:canServe?S.visitor:null,body:detailsNode(t),actions,onClose:o.onClose});
+}
+/* категорія: маленькі картки з назвами, «Подати», «Інфо» і ✕ */
+function openCategory(type,mode,note){
+  const serve=!!(mode==='serve'&&S&&S.phase==='play'&&S.visitor);
+  const src=mode==='serve'?menuTeas():TEAS;
+  const teas=src.filter(t=>t.type===type).sort((a,b)=>a.name.localeCompare(b.name,'uk'));
+  const [g,c]=STYLE[type]||['🍵','#7ba8a0'];
+  const list=el('div','mini-list');
+  if(!teas.length)list.append(el('p','empty',tx('cat_empty')));
+  teas.forEach(t=>{
+    const tried=serve&&S.visitor.tried.has(t.id);
+    const m=el('div','mini'+(tried?' tried':''));
+    m.style.setProperty('--tb',rgba(c,.75));m.style.setProperty('--ts',rgba(c,.2));
+    m.append(el('div','n',t.name));
+    if((easy||mode==='view')&&t.desc.length)m.append(el('div','d',t.desc.slice(0,3).map(cap).join(', ')));
+    const acts=el('div','acts');
+    if(serve){
+      const b=el('button','sm go',tried?tx('btn_tried_short'):tx('btn_serve'));b.type='button';b.disabled=tried;
+      b.onclick=()=>{closeSheet(true);const r=serveTea(t);if(r&&r.wrong)openCategory(type,mode,r.msg);};
+      acts.append(b);
+    }
+    const i=el('button','sm',tx('btn_info'));i.type='button';
+    i.onclick=()=>openTea(t,{serve,onClose:()=>openCategory(type,mode),back:n=>openCategory(type,mode,n)});
+    acts.append(i);
+    m.append(acts);list.append(m);
+  });
+  showSheet({kicker:g,title:type,need:serve?S.visitor:null,note,body:list,actions:[]});
+}
+
+/* ---------- гра ---------- */
+let easy=!!store.get(EASY);
+function buildTray(){buildCats($('#tray'),'serve');}
+function startGame(st){
+  S=st;
+  show('game');$('#easy').checked=easy;
+  buildTray();nextVisitor();
+}
+function nextVisitor(){
+  if(S.lives<=0)return gameOver();
+  S.visitor=makeVisitor();S.phase='play';S.lastTea=null;S.brewed=false;
+  renderHud();renderVisitor();renderNext();
+  setMsg(tx(S.visitor.vip?'msg_vip':'msg_start'));
+  window.scrollTo(0,0);
+}
+function stampShow(text,gone){
+  const s=$('#stamp');if(!s)return;
+  s.textContent=text;s.className='stamp'+(gone?' gone':'');void s.offsetWidth;s.classList.add('show');
+}
+function serveTea(t){
+  const v=S.visitor;
+  if(S.phase!=='play'||v.tried.has(t.id))return null;
+  v.tried.add(t.id);
+  const fails=v.traits.filter(tr=>!fits(t,tr));
+  if(!fails.length){win(t);return{win:true};}
+  v.patience--;buzz(40);
+  if(v.patience<=0){lose();return{lost:true};}
+  const failVisible=fails.filter(f=>!f.hidden),failHidden=fails.filter(f=>f.hidden),hid=v.traits.filter(x=>x.hidden);
+  let rev=null;
+  if(hid.length){rev=failHidden.length?pick(failHidden):pick(hid);rev.hidden=false;rev.fresh=true;}
+  const parts=[tx('msg_wrong',{tea:t.name})];
+  if(failVisible.length)parts.push(tx('msg_mismatch',{list:failVisible.map(chipText).join(', ')}));
+  if(rev)parts.push(tx('msg_revealed',{trait:chipText(rev)}));
+  const msg=parts.join(' ');
+  renderVisitor();renderHud();setMsg(msg,'bad');
+  $('#visitor').classList.remove('shake');void $('#visitor').offsetWidth;$('#visitor').classList.add('shake');
+  return{wrong:true,msg};
+}
+function win(t){
+  const v=S.visitor,perfect=v.patience===v.max;
+  S.streak=perfect?S.streak+1:0;
+  if(perfect)S.perfects++;
+  const pts=(v.patience*10+v.traits.length*5+Math.min(S.streak,10)*3)*(v.vip?2:1);
+  S.score+=pts;
+  let extra=false;
+  if(perfect&&S.perfects%CFG.PERFECTS_FOR_LIFE===0&&S.lives<CFG.LIVES){S.lives++;extra=true;}
+  const before=menuSize();S.served++;const after=menuSize();
+  if(after>before)S.pendingUnlock=BYID[S.order[after-1]];
+  v.traits.forEach(tr=>{tr.hidden=false;});
+  S.phase='won';S.lastTea=t;S.brewed=false;buzz(20);
+  renderVisitor();stampShow(tx('stamp_win'));renderHud();renderNext();
+  setMsg([tx('msg_win',{tea:t.name,pts:pts}),perfect?tx('msg_perfect'):'',extra?tx('msg_life'):''].filter(Boolean).join(' '),'ok');
+  save();
+}
+function lose(){
+  const v=S.visitor;
+  S.lives--;S.streak=0;
+  v.traits.forEach(tr=>{tr.hidden=false;});
+  const ok=menuTeas().filter(t=>v.traits.every(tr=>fits(t,tr)));
+  S.phase=S.lives>0?'lost':'over';
+  renderVisitor();stampShow(tx('stamp_lose'),true);renderHud();renderNext();
+  setMsg(tx('msg_lose',{tea:(ok[0]||BYID[v.target]).name}),'bad');
+  $('#visitor').classList.add('shake');buzz(120);
+  save();
+}
+/* заварювання: бонус за температуру та проливи */
+function openBrew(){
+  const t=S.lastTea;
+  if(!t||S.brewed||S.phase!=='won')return;
+  const ans={},keys=[];
+  const body=el('div','brew');
+  function group(key,q,values,fmt){
+    keys.push(key);
+    const box=el('div','qbox');box.append(el('p','brew-q',q));
+    const row=el('div','opts');
+    values.forEach(v=>{
+      const b=el('button','opt',fmt(v));b.type='button';
+      b.onclick=()=>{
+        ans[key]=v;[...row.children].forEach(x=>x.classList.toggle('on',x===b));
+        if(keys.every(k=>ans[k]!=null))finishBrew(t,ans);
+      };
+      row.append(b);
+    });
+    box.append(row);body.append(box);
+  }
+  if(t.tlo!=null)group('temp',tx('brew_q_temp'),[80,85,90,95,100],v=>v+'°C');
+  if(t.pn){const start=Math.max(1,t.pn-rnd(5));group('pours',tx('brew_q_pours'),[0,1,2,3,4].map(i=>start+i),v=>String(v));}
+  showSheet({title:tx('brew_title',{tea:t.name}),body,actions:[{label:tx('btn_skip'),cls:'btn ghost',fn:()=>closeSheet()}]});
+}
+function finishBrew(t,ans){
+  let pts=0;const body=el('div','brew');
+  const line=(ok,text)=>{const p=el('p','res '+(ok?'ok':'bad'),(ok?'✓ ':'✕ ')+text);body.append(p);};
+  if(ans.temp!=null){
+    const ok=ans.temp>=t.tlo&&ans.temp<=t.thi;if(ok)pts+=CFG.BREW_PTS;
+    line(ok,tx(ok?'brew_temp_ok':'brew_temp_bad',{v:ans.temp,range:t.temp}));
+  }
+  if(ans.pours!=null){
+    const d=Math.abs(ans.pours-t.pn),ok=d===0,near=d===1;
+    pts+=ok?CFG.BREW_PTS:near?Math.floor(CFG.BREW_PTS/2):0;
+    line(ok||near,tx(ok?'brew_pours_ok':near?'brew_pours_near':'brew_pours_bad',{v:ans.pours,n:t.pn}));
+  }
+  S.brewed=true;S.score+=pts;renderHud();renderNext();save();
+  body.append(el('p','total',tx('brew_total',{pts})));
+  showSheet({title:tx('brew_title',{tea:t.name}),body,actions:[{label:tx('btn_ok'),fn:()=>closeSheet()}]});
+}
+function onNext(){
+  if(S.phase==='over')return gameOver();
+  if(S.pendingUnlock){
+    S.pendingUnlock=null;buildTray();
+    const last=endless();
+    const p=el('p','',tx(last?'unlock_last_body':'unlock_new_body'));
+    showSheet({title:tx(last?'unlock_last_title':'unlock_new_title'),body:p,
+      actions:[{label:tx('btn_to_guests'),fn:()=>closeSheet()}],onClose:()=>nextVisitor()});
+    return;
+  }
+  nextVisitor();
+}
+function gameOver(){
+  const best=store.get(BEST)||0,record=S.score>0&&S.score>=best;
+  if(S.score>best)store.set(BEST,S.score);
+  store.del(KEY);
+  $('#over-title').textContent=tx(record?'over_record':'over_title');
+  const dl=$('#over-stats');dl.replaceChildren();
+  [[tx('stat_score'),S.score],[tx('stat_served'),S.served],[tx('stat_menu'),tx('stat_menu_value',{m:menuSize(),total:TEAS.length})],[tx('stat_perfect'),S.perfects],[tx('stat_best'),Math.max(best,S.score)]]
+    .forEach(([k,v])=>dl.append(el('dt','',k),el('dd','',String(v))));
+  show('over');
+}
+
+/* ---------- довідник і правила ---------- */
+function openDex(){
+  buildCats($('#dex'),'view');
+  show('dex');
+}
+function openHow(){
+  const ol=el('ol','howto');
+  for(let n=1;TX['howto_'+n];n++)ol.append(el('li','',tx('howto_'+n,{per:CFG.PER_LEVEL,perfects:CFG.PERFECTS_FOR_LIFE})));
+  showSheet({title:tx('howto_title'),body:ol,actions:[{label:tx('btn_ok'),fn:()=>closeSheet()}]});
+}
+
+/* ---------- міні-ігри ---------- */
+const MGBEST='chaina-zala-mg-v1';
+const MGL={sort:{g:'🧺',total:15},match:{g:'🔗',total:3},tech:{g:'📇',total:6},odd:{g:'🕵️',total:10},guess:{g:'🔍',total:10},order:{g:'🪜',total:5}};
+let MG=null,mgFast=false;
+const later=(fn,ms)=>setTimeout(fn,mgFast?0:(ms||800));
+const mgBody=()=>$('#mg-body');
+const mgBest=()=>store.get(MGBEST)||{};
+const uniq=fn=>[...new Set(TEAS.map(fn).filter(v=>v!=null&&v!==''))];
+const mgFb=(text,cls)=>el('p','mg-fb'+(cls?' '+cls:''),text);
+function mgNext(body){
+  const b=el('button','btn next',tx('mg_next'));b.type='button';b.onclick=mgAdvance;body.append(b);
+}
+function mgSetup(t){TEAS.forEach(x=>{x._pk=new Set(oddProps(x).map(p=>p[0]+'|'+p[1]));});}
+
+function openMini(){
+  const root=$('#mini-list');root.replaceChildren();
+  const best=mgBest();
+  Object.keys(MGL).forEach(id=>{
+    const b=el('button','mgtile');b.type='button';
+    const box=el('div','');
+    box.append(el('b','',tx('mg_'+id+'_title')),el('small','',tx('mg_'+id+'_desc')));
+    if(best[id])box.append(el('small','rec',tx('mini_best',{n:best[id]})));
+    b.append(el('span','g',MGL[id].g),box);
+    b.onclick=()=>mgStart(id);root.append(b);
+  });
+  show('mini');
+}
+function mgStart(id){
+  MG={id,score:0,step:0,total:MGL[id].total,mist:0,streak:0,busy:false,q:null};
+  $('#mg-title').textContent=tx('mg_'+id+'_title');
+  show('mg');mgHud();MGR[id].next();
+}
+function mgHud(){
+  $('#mg-score').textContent=MG.score;
+  $('#mg-prog').textContent=Math.min(MG.step+1,MG.total)+'/'+MG.total;
+  $('#mg-bar').style.width=(MG.step/MG.total*100)+'%';
+}
+function mgAdd(p){MG.score=Math.max(0,MG.score+p);mgHud();}
+function mgAdvance(){
+  MG.step++;MG.busy=false;
+  if(MG.step>=MG.total)mgFinish();
+  else{mgHud();MGR[MG.id].next();window.scrollTo(0,0);}
+}
+function mgFinish(){
+  const best=mgBest(),prev=best[MG.id]||0,rec=MG.score>prev;
+  if(rec){best[MG.id]=MG.score;store.set(MGBEST,best);}
+  const dl=el('dl','stats');
+  [[tx('mg_res_score'),MG.score],[tx('mg_res_mist'),MG.mist],[tx('mg_res_best'),Math.max(prev,MG.score)]]
+    .forEach(([k,v])=>dl.append(el('dt','',k),el('dd','',String(v))));
+  const id=MG.id;mgHud();
+  showSheet({kicker:rec?tx('mg_new_record'):'',title:tx('mg_done_title'),body:dl,
+    actions:[{label:tx('mg_again'),fn:()=>{closeSheet(true);mgStart(id);}},{label:tx('mg_home'),cls:'btn ghost',fn:()=>closeSheet()}],
+    onClose:openMini});
+}
+const streakPts=()=>10+Math.min(MG.streak,5)*2;
+
+/* --- 1. Сортування --- */
+const sortRule={
+  type:()=>({bins:typeList().map(x=>({k:x,l:x})),of:t=>t.type,has:t=>!!t.type,pick:3}),
+  region:()=>({bins:[...new Set(TEAS.map(t=>t.region))].filter(Boolean).map(x=>({k:x,l:x})),of:t=>t.region,has:t=>!!t.region,pick:3}),
+  char:()=>({bins:[{k:'Інтроверт',l:'Інтроверт'},{k:'Екстраверт',l:'Екстраверт'}],of:t=>t.char,has:t=>!!t.char}),
+  novice:()=>({bins:[{k:'y',l:tx('bin_novice_yes')},{k:'n',l:tx('bin_novice_no')}],of:t=>t.novice?'y':'n',has:()=>true}),
+  time:()=>({bins:['Вечір','Ранок–День','Будь-який'].map(x=>({k:x,l:x})),of:t=>t.time,has:t=>!!t.time}),
+  pour:()=>({bins:['Швидкий','Нормальний','Повільний'].map(x=>({k:x,l:x})),of:t=>t.pour,has:t=>!!t.pour}),
+  temp:()=>({bins:[{k:'lo',l:tx('bin_temp_low')},{k:'hi',l:tx('bin_temp_high')}],of:t=>t.tlo<90?'lo':'hi',has:t=>t.tlo!=null}),
+  pours:()=>({bins:[{k:'lo',l:tx('bin_pours_low')},{k:'hi',l:tx('bin_pours_high')}],of:t=>t.pn<=6?'lo':'hi',has:t=>t.pn!=null})
+};
+function sortStage(prev){
+  for(const name of shuffle(Object.keys(sortRule).filter(k=>k!==prev))){
+    const r=sortRule[name](),pool=TEAS.filter(r.has);
+    let bins=r.bins.filter(b=>pool.filter(t=>r.of(t)===b.k).length>=2);
+    if(r.pick)bins=shuffle(bins).slice(0,r.pick);
+    if(bins.length<2)continue;
+    const keys=new Set(bins.map(b=>b.k));
+    const cards=shuffle(pool.filter(t=>keys.has(r.of(t)))).slice(0,5);
+    if(cards.length<5||new Set(cards.map(r.of)).size<2)continue;
+    return{name,bins,of:r.of,cards};
+  }
+  return null;
+}
+function sortNext(){
+  if(MG.step%5===0){MG.stage=sortStage(MG.prevRule);MG.prevRule=MG.stage.name;}
+  const st=MG.stage,t=st.cards[MG.step%5],ans=st.of(t);
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_sort_rule',{rule:tx('rule_'+st.name)})));
+  const card=el('div','mg-card',t.name);
+  const info=el('button','sm',tx('btn_info'));info.type='button';info.onclick=()=>openTea(t,{});
+  const fb=mgFb(tx('mg_sort_where'));
+  const bins=el('div','bins');
+  st.bins.forEach(bn=>{
+    const x=el('button','bin',bn.l);x.type='button';x.dataset.k=bn.k;
+    x.onclick=()=>{
+      if(MG.busy)return;MG.busy=true;
+      const right=bn.k===ans;x.classList.add(right?'ok':'no');
+      if(right){mgAdd(streakPts());MG.streak++;fb.textContent=tx('mg_right');}
+      else{
+        MG.mist++;MG.streak=0;
+        [...bins.children].forEach(y=>{if(y.dataset.k===ans)y.classList.add('ok');});
+        fb.textContent=tx('mg_sort_wrong',{bin:st.bins.find(b=>b.k===ans).l});
+      }
+      later(mgAdvance);
+    };
+    bins.append(x);
+  });
+  MG.q={tea:t.id,ans};
+  const wrap=el('div','mg-infowrap');wrap.append(info);
+  body.append(card,wrap,bins,fb);
+}
+
+/* --- 2. Пари --- */
+const MATCH_MODES={
+  temp:{key:t=>t.tlo!=null?t.temp:null,val:t=>t.temp},
+  pours:{key:t=>t.pn||null,val:t=>tx('val_pours',{n:t.pn})},
+  region:{key:t=>t.region||null,val:t=>t.region},
+  type:{key:t=>t.type||null,val:t=>t.type}
+};
+function matchBoard(prev){
+  const mode=shuffle(Object.keys(MATCH_MODES).filter(m=>m!==prev))[0],M=MATCH_MODES[mode];
+  const seen=new Set(),teas=[];
+  shuffle(TEAS).forEach(t=>{const k=M.key(t);if(k!=null&&!seen.has(k)&&teas.length<5){seen.add(k);teas.push(t);}});
+  return{mode,teas,vals:shuffle(teas.map(t=>({id:t.id,text:M.val(t)})))};
+}
+function matchNext(){
+  const B=matchBoard(MG.prevMode);MG.prevMode=B.mode;
+  const q={B,done:0,n:B.teas.length,sel:null};MG.q=q;
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_match_rule',{what:tx('match_'+B.mode)})));
+  const fb=mgFb(tx('mg_match_hint'));
+  const grid=el('div','pairs'),L=el('div','pcol'),R=el('div','pcol');
+  function onPick(btn,side){
+    if(btn.classList.contains('done')||MG.busy)return;
+    const s=q.sel;
+    if(s&&s.side===side)s.btn.classList.remove('sel');
+    if(!s||s.side===side){q.sel={side,btn};btn.classList.add('sel');return;}
+    const a=s.btn,b=btn;q.sel=null;a.classList.remove('sel');
+    if(a.dataset.id===b.dataset.id){
+      [a,b].forEach(x=>x.classList.add('done'));mgAdd(20);q.done++;fb.textContent=tx('mg_match_ok');fb.className='mg-fb ok';
+      if(q.done>=q.n){MG.busy=true;later(mgAdvance);}
+    }else{
+      MG.mist++;mgAdd(-5);fb.textContent=tx('mg_match_bad');fb.className='mg-fb bad';
+      [a,b].forEach(x=>x.classList.add('bad'));setTimeout(()=>[a,b].forEach(x=>x.classList.remove('bad')),mgFast?0:450);
+    }
+  }
+  B.teas.forEach(t=>{const b=el('button','pbtn',t.name);b.type='button';b.dataset.id=t.id;b.onclick=()=>onPick(b,'L');L.append(b);});
+  B.vals.forEach(v=>{const b=el('button','pbtn',v.text);b.type='button';b.dataset.id=v.id;b.onclick=()=>onPick(b,'R');R.append(b);});
+  grid.append(L,R);body.append(grid,fb);
+}
+
+/* --- 3. Технологічна картка --- */
+const okWeight=t=>/^1г \/ \d+мл$/.test(t.weight)?t.weight:null;
+const TECH={
+  weight:{lab:'prop_weight',val:okWeight,pool:()=>uniq(okWeight)},
+  temp:{lab:'prop_temp',val:t=>t.tlo!=null?t.temp:null,pool:()=>uniq(t=>t.tlo!=null?t.temp:null)},
+  infusions:{lab:'prop_infusions',val:t=>t.pn?String(t.pn):null,pool:()=>[]},
+  pour:{lab:'prop_pour',val:t=>t.pour||null,pool:()=>['Швидкий','Нормальний','Повільний']},
+  vessel:{lab:'prop_vessel',val:t=>t.vessels.length?t.vessels.join(', '):null,pool:()=>uniq(t=>t.vessels.length?t.vessels.join(', '):null)},
+  time:{lab:'prop_time',val:t=>t.time||null,pool:()=>['Вечір','Ранок–День','Будь-який']}
+};
+const TECH_ORDER=['weight','temp','infusions','pour','vessel','time'];
+function techOpts(k,t){
+  const ans=TECH[k].val(t);let pool;
+  if(k==='infusions'){const n=t.pn;pool=[n-3,n-2,n-1,n+1,n+2,n+3].filter(x=>x>=3).map(String);}
+  else pool=TECH[k].pool().filter(x=>x!==ans);
+  return shuffle([ans].concat(shuffle(pool).slice(0,Math.min(3,pool.length))));
+}
+function techNext(){
+  const t=pick(TEAS.filter(x=>TECH_ORDER.filter(k=>TECH[k].val(x)).length>=4));
+  const avail=TECH_ORDER.filter(k=>TECH[k].val(t));
+  const blanks=shuffle(avail).slice(0,3);
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_tech_fill')));
+  const card=el('div','techcard');
+  card.append(el('div','tc-k',tx('mg_tech_card')),el('h3','',t.name),el('div','tc-sub',t.type+', '+t.region));
+  const cells={};
+  avail.forEach(k=>{
+    const row=el('div','tf');row.append(el('span','',tx(TECH[k].lab)));
+    const v=el('span','tv'+(blanks.includes(k)?' blank':''),blanks.includes(k)?'???':TECH[k].val(t));
+    row.append(v);card.append(row);cells[k]=v;
+  });
+  body.append(card);
+  const q={tea:t.id,done:false,blanks:blanks.map(k=>({k,ans:TECH[k].val(t),chosen:null,opts:techOpts(k,t)}))};MG.q=q;
+  const check=el('button','btn next',tx('mg_check'));check.type='button';check.disabled=true;
+  q.blanks.forEach(bl=>{
+    const box=el('div','tq');box.append(el('p','brew-q',tx(TECH[bl.k].lab)));
+    const row=el('div','qopts');
+    bl.opts.forEach(o=>{
+      const b=el('button','qopt',o);b.type='button';
+      b.onclick=()=>{
+        if(q.done)return;bl.chosen=o;
+        [...row.children].forEach(x=>x.classList.toggle('on',x===b));
+        check.disabled=!q.blanks.every(z=>z.chosen!=null);
+      };
+      row.append(b);
+    });
+    bl.row=row;box.append(row);body.append(box);
+  });
+  check.onclick=()=>{
+    if(q.done||check.disabled)return;q.done=true;let ok=0;
+    q.blanks.forEach(bl=>{
+      const right=bl.chosen===bl.ans;if(right)ok++;
+      [...bl.row.children].forEach(x=>{
+        if(x.textContent===bl.ans)x.classList.add('ok');else if(x.classList.contains('on'))x.classList.add('no');
+        x.disabled=true;
+      });
+      cells[bl.k].classList.remove('blank');cells[bl.k].textContent=bl.ans;cells[bl.k].classList.add(right?'good':'bad');
+    });
+    const n=q.blanks.length;
+    MG.mist+=n-ok;mgAdd(ok*10+(ok===n?10:0));
+    check.remove();body.append(mgFb(tx('mg_tech_result',{ok,n}),ok===n?'ok':'bad'));mgNext(body);
+  };
+  body.append(check);
+}
+
+/* --- 4. Зайвий чай --- */
+function oddProps(t){
+  const a=[];
+  if(t.type)a.push(['type',t.type]);
+  if(t.region)a.push(['region',t.region]);
+  if(t.char)a.push(['char',t.char]);
+  if(t.novice)a.push(['novice','y']);
+  t.dl.forEach(d=>a.push(['desc',d]));
+  if(t.pour)a.push(['pour',t.pour]);
+  if(t.time)a.push(['time',t.time]);
+  return a;
+}
+const oddText=p=>tx('odd_'+p[0],{v:p[0]==='desc'?cap(p[1]):p[1]});
+function oddQuestion(){
+  for(let tries=0;tries<300;tries++){
+    const p=pick(oddProps(pick(TEAS))),k=p[0]+'|'+p[1];
+    const withP=TEAS.filter(t=>t._pk.has(k)),without=TEAS.filter(t=>!t._pk.has(k));
+    if(withP.length<3||!without.length)continue;
+    const three=shuffle(withP).slice(0,3),odd=pick(without),four=three.concat([odd]);
+    const cnt={};four.forEach(t=>t._pk.forEach(x=>{cnt[x]=(cnt[x]||0)+1;}));
+    let amb=false;
+    for(const x in cnt){if(cnt[x]===3&&x!==k&&four.find(t=>!t._pk.has(x))!==odd){amb=true;break;}}
+    if(amb)continue;
+    return{p,three,odd,four:shuffle(four)};
+  }
+  const p=['type',TEAS[0].type],three=TEAS.filter(t=>t.type===TEAS[0].type).slice(0,3),odd=TEAS.find(t=>t.type!==TEAS[0].type);
+  return{p,three,odd,four:three.concat([odd])};
+}
+function oddNext(){
+  const Q=oddQuestion();MG.q=Q;
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_odd_q')));
+  const grid=el('div','qgrid'),fb=mgFb('');fb.hidden=true;
+  Q.four.forEach(t=>{
+    const b=el('button','qopt big',t.name);b.type='button';b.dataset.id=t.id;
+    b.onclick=()=>{
+      if(MG.busy)return;MG.busy=true;
+      const right=t===Q.odd;b.classList.add(right?'ok':'no');
+      [...grid.children].forEach(x=>{if(x.dataset.id===Q.odd.id)x.classList.add('ok');x.disabled=true;});
+      if(right){mgAdd(streakPts());MG.streak++;}else{MG.mist++;MG.streak=0;}
+      fb.hidden=false;fb.className='mg-fb '+(right?'ok':'bad');
+      fb.textContent=(right?tx('mg_right')+' ':tx('mg_wrong')+' ')+tx('mg_odd_common',{what:oddText(Q.p),tea:Q.odd.name});
+      mgNext(body);
+    };
+    grid.append(b);
+  });
+  body.append(grid,fb);
+}
+
+/* --- 5. Вгадай чай --- */
+function guessQuestion(){
+  for(let tries=0;tries<200;tries++){
+    const target=pick(TEAS),clues=shuffle(traitsOf(target)).slice(0,3);
+    const others=TEAS.filter(t=>t!==target&&!clues.every(c=>fits(t,c)));
+    if(others.length<3)continue;
+    return{target,clues,options:shuffle([target].concat(shuffle(others).slice(0,3)))};
+  }
+}
+function guessNext(){
+  const Q=guessQuestion();MG.q=Q;
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_guess_q')));
+  const card=el('div','mg-card clues'),chips=el('div','chips');
+  Q.clues.forEach(c=>chips.append(el('span','chip',chipText(c))));
+  card.append(chips);
+  const grid=el('div','qgrid'),fb=mgFb('');fb.hidden=true;
+  Q.options.forEach(t=>{
+    const b=el('button','qopt big',t.name);b.type='button';b.dataset.id=t.id;
+    b.onclick=()=>{
+      if(MG.busy)return;MG.busy=true;
+      const right=t===Q.target;b.classList.add(right?'ok':'no');
+      [...grid.children].forEach(x=>{if(x.dataset.id===Q.target.id)x.classList.add('ok');x.disabled=true;});
+      if(right){mgAdd(streakPts());MG.streak++;}else{MG.mist++;MG.streak=0;}
+      fb.hidden=false;fb.className='mg-fb '+(right?'ok':'bad');
+      fb.textContent=(right?tx('mg_right'):tx('mg_wrong'))+' '+tx('mg_guess_reveal',{tea:Q.target.name});
+      const info=el('button','sm',tx('btn_info'));info.type='button';info.onclick=()=>openTea(Q.target,{});
+      body.append(el('div','mg-infowrap',''));body.lastChild.append(info);
+      mgNext(body);
+    };
+    grid.append(b);
+  });
+  body.append(card,grid,fb);
+}
+
+/* --- 6. Сходинки --- */
+function orderNext(){
+  const mode=Math.random()<.5?'pours':'temp';
+  const key=mode==='pours'?(t=>t.pn):(t=>t.tlo!=null?(t.tlo+t.thi)/2:null);
+  const disp=mode==='pours'?(t=>tx('val_pours',{n:t.pn})):(t=>t.temp);
+  const seen=new Set(),teas=[];
+  shuffle(TEAS).forEach(t=>{const k=key(t);if(k!=null&&!seen.has(k)&&teas.length<5){seen.add(k);teas.push(t);}});
+  const sorted=teas.slice().sort((a,b)=>key(a)-key(b));
+  const q={mode,sorted:sorted.map(t=>t.id),placed:0,mist:0};MG.q=q;
+  const body=mgBody();body.replaceChildren();
+  body.append(el('p','mg-rule',tx('mg_order_q_'+mode)));
+  const ladder=el('ol','ladder'),list=el('div','pcol olist'),fb=mgFb(tx('mg_order_tap'));
+  teas.forEach(t=>{
+    const b=el('button','pbtn',t.name);b.type='button';b.dataset.id=t.id;
+    b.onclick=()=>{
+      if(MG.busy||b.disabled)return;
+      if(t===sorted[q.placed]){
+        b.disabled=true;b.classList.add('done');
+        const li=el('li','');li.append(el('span','',t.name),el('b','',disp(t)));ladder.append(li);
+        q.placed++;
+        if(q.placed===teas.length){
+          MG.busy=true;const pts=Math.max(5,20-5*q.mist);mgAdd(pts);
+          fb.className='mg-fb ok';fb.textContent=tx('mg_order_ok');mgNext(body);
+        }
+      }else{
+        q.mist++;MG.mist++;fb.className='mg-fb bad';fb.textContent=tx('mg_order_bad');
+        b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),mgFast?0:450);
+      }
+    };
+    list.append(b);
+  });
+  body.append(ladder,list,fb);
+}
+const MGR={sort:{next:sortNext},match:{next:matchNext},tech:{next:techNext},odd:{next:oddNext},guess:{next:guessNext},order:{next:orderNext}};
+mgSetup();
+
+/* ---------- навчання за категоріями ---------- */
+const LKEY='chaina-zala-learn-v1';
+let LP=store.get(LKEY)||{};LP.teas=LP.teas||{};LP.cats=LP.cats||{};
+const lsave=()=>store.set(LKEY,LP);
+const tprog=t=>LP.teas[t.id]||{};
+const tstars=t=>{const p=tprog(t);return (p.r?1:0)+(p.c?1:0)+(p.q?1:0);};
+const cprog=type=>LP.cats[type]||(LP.cats[type]={});
+const groupOf=type=>TEAS.filter(t=>t.type===type).sort((a,b)=>a.name.localeCompare(b.name,'uk'));
+const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+let LS=null,curCat=null;
+const allDesc=()=>[...new Set(TEAS.flatMap(x=>x.desc.map(cap)))];
+
+/* --- конструктор запитань --- */
+function mkOpts(correct,pool,n){
+  n=n||4;const c=String(correct);
+  const ds=shuffle([...new Set(pool.map(String))].filter(x=>x!==c)).slice(0,n-1);
+  return shuffle([{l:c,ok:true}].concat(ds.map(x=>({l:x,ok:false}))));
+}
+const qRegion=t=>t.region?{text:tx('q_region',{tea:t.name}),opts:mkOpts(t.region,uniq(x=>x.region))}:null;
+const qChar=t=>t.char?{text:tx('q_char',{tea:t.name}),opts:mkOpts(t.char,['Інтроверт','Екстраверт'],2)}:null;
+function qTaste(t){
+  if(!t.desc.length)return null;
+  const pool=allDesc().filter(x=>!t.dl.includes(x.toLowerCase()));
+  return{text:tx('q_taste',{tea:t.name}),opts:mkOpts(cap(pick(t.desc)),pool)};
+}
+const qTemp=t=>t.tlo!=null?{text:tx('q_temp',{tea:t.name}),opts:mkOpts(t.temp,uniq(x=>x.tlo!=null?x.temp:null))}:null;
+function qPours(t){
+  if(!t.pn)return null;
+  const n=t.pn;return{text:tx('q_pours',{tea:t.name}),opts:mkOpts(n,[n-3,n-2,n-1,n+1,n+2,n+3].filter(x=>x>=3))};
+}
+const qPour=t=>t.pour?{text:tx('q_pour',{tea:t.name}),opts:mkOpts(t.pour,['Швидкий','Нормальний','Повільний'],3)}:null;
+const qVessel=t=>t.vessels.length?{text:tx('q_vessel',{tea:t.name}),opts:mkOpts(t.vessels.join(', '),uniq(x=>x.vessels.length?x.vessels.join(', '):null))}:null;
+const qTime=t=>t.time?{text:tx('q_time',{tea:t.name}),opts:mkOpts(t.time,['Вечір','Ранок–День','Будь-який'],3)}:null;
+const qNovice=t=>({text:tx('q_novice',{tea:t.name}),opts:[{l:tx('ans_yes'),ok:!!t.novice},{l:tx('ans_no'),ok:!t.novice}]});
+
+function diffFacts(a,b){
+  const f=[];
+  a.desc.forEach(d=>{if(!b.dl.includes(d.toLowerCase()))f.push({k:'desc',v:cap(d)});});
+  if(a.region&&a.region!==b.region)f.push({k:'region',v:a.region});
+  if(a.char&&a.char!==b.char)f.push({k:'char',v:a.char});
+  if(a.tlo!=null&&a.temp!==b.temp)f.push({k:'temp',v:a.temp});
+  if(a.pn&&a.pn!==b.pn)f.push({k:'pours',v:a.pn});
+  if(a.pour&&a.pour!==b.pour)f.push({k:'pour',v:a.pour});
+  if(!!a.novice!==!!b.novice)f.push({k:'novice',v:a.novice?'yes':'no'});
+  return f;
+}
+const factText=f=>tx('diff_'+f.k+(f.k==='novice'?'_'+f.v:''),{v:f.v});
+function qDiff(a,b){
+  const good=diffFacts(a,b);
+  if(!good.length)return null;
+  const correct=pick(good),ct=factText(correct);
+  let bad=diffFacts(b,a);
+  shuffle(TEAS.filter(x=>x!==a&&x!==b)).slice(0,8).forEach(c=>{bad=bad.concat(diffFacts(c,a));});
+  const texts=[...new Set(bad.map(factText))].filter(x=>x!==ct);
+  if(texts.length<2)return null;
+  const opts=shuffle([{l:ct,ok:true}].concat(shuffle(texts).slice(0,3).map(x=>({l:x,ok:false}))));
+  return{text:tx('q_diff',{a:a.name,b:b.name}),opts};
+}
+function groupGuess(g){
+  for(let n=0;n<40;n++){
+    const target=pick(g),opts=shuffle([target].concat(shuffle(g.filter(x=>x!==target)).slice(0,3)));
+    const clues=[];
+    for(const c of shuffle(traitsOf(target))){
+      clues.push(c);
+      if(opts.filter(t=>clues.every(k=>fits(t,k))).length===1||clues.length>=4)break;
+    }
+    if(opts.filter(t=>clues.every(k=>fits(t,k))).length!==1)continue;
+    return{text:tx('exam_guess'),chips:clues.map(chipText),opts:opts.map(t=>({l:t.name,ok:t===target}))};
+  }
+  return null;
+}
+
+/* --- рушій кроків --- */
+function lrec(sec,ok){
+  const s=LS.sec[sec]||(LS.sec[sec]={ok:0,n:0});s.n++;if(ok)s.ok++;
+}
+function readStep(title,fn){return{kind:'read',render(body){body.append(el('h3','lhead',title));fn(body);}};}
+function qStep(q,sec){
+  return{kind:'q',q,render(body,ctl){
+    body.append(el('p','mg-rule',q.text));
+    if(q.chips){const card=el('div','mg-card clues'),cs=el('div','chips');q.chips.forEach(x=>cs.append(el('span','chip',x)));card.append(cs);body.append(card);}
+    const grid=el('div','qgrid'),fb=mgFb('');fb.hidden=true;
+    q.opts.forEach(o=>{
+      const b=el('button','qopt big',o.l);b.type='button';
+      b.onclick=()=>{
+        if(LS.answered)return;
+        b.classList.add(o.ok?'ok':'no');
+        [...grid.children].forEach((x,i)=>{if(q.opts[i].ok)x.classList.add('ok');x.disabled=true;});
+        lrec(sec,o.ok);
+        fb.hidden=false;fb.className='mg-fb '+(o.ok?'ok':'bad');
+        fb.textContent=o.ok?tx('fb_right'):tx('fb_wrong',{ans:q.opts.find(z=>z.ok).l});
+        ctl.answered();
+      };
+      grid.append(b);
+    });
+    body.append(grid,fb);
+  }};
+}
+function formStep(fields,sec){
+  return{kind:'form',fields,render(body,ctl){
+    body.append(el('p','mg-rule',tx('form_intro')));
+    const check=el('button','btn next',tx('lesson_check'));check.type='button';check.disabled=true;
+    fields.forEach(f=>{
+      f.chosen=null;
+      const box=el('div','tq');box.append(el('p','brew-q',f.label));
+      const row=el('div','qopts');f.row=row;
+      f.opts.forEach(o=>{
+        const b=el('button','qopt',o.l);b.type='button';
+        b.onclick=()=>{
+          if(LS.answered)return;f.chosen=o;
+          [...row.children].forEach(x=>x.classList.toggle('on',x===b));
+          check.disabled=!fields.every(z=>z.chosen);
+        };
+        row.append(b);
+      });
+      box.append(row);body.append(box);
+    });
+    const res=mgFb('');res.hidden=true;
+    check.onclick=()=>{
+      if(LS.answered||check.disabled)return;
+      let ok=0;
+      fields.forEach(f=>{
+        const right=f.chosen.ok;if(right)ok++;lrec(sec,right);
+        [...f.row.children].forEach((x,i)=>{if(f.opts[i].ok)x.classList.add('ok');else if(x.classList.contains('on'))x.classList.add('no');x.disabled=true;});
+      });
+      check.remove();res.hidden=false;res.className='mg-fb '+(ok===fields.length?'ok':'bad');
+      res.textContent=tx('form_result',{ok:ok,n:fields.length});
+      ctl.answered();
+    };
+    body.append(check,res);
+  }};
+}
+function lessonStart(o){
+  LS=Object.assign({i:0,answered:false,sec:{}},o);
+  $('#lesson-title').textContent=o.title;show('lesson');lessonRender();
+}
+function lessonRender(){
+  const s=LS.steps[LS.i],body=$('#lesson-body');body.replaceChildren();LS.answered=false;
+  $('#lesson-bar').style.width=(LS.i/LS.steps.length*100)+'%';
+  $('#lesson-step').textContent=(LS.i+1)+'/'+LS.steps.length;
+  const foot=el('div','lfoot');
+  const back=el('button','btn ghost',tx('lesson_back'));back.type='button';
+  back.hidden=!(LS.i>0&&s.kind==='read'&&LS.steps[LS.i-1].kind==='read');
+  back.onclick=()=>{LS.i--;lessonRender();};
+  const next=el('button','btn',LS.i===LS.steps.length-1?tx('lesson_finish'):tx('lesson_next'));next.type='button';
+  next.hidden=s.kind!=='read';next.onclick=lessonNext;
+  foot.append(back,next);
+  s.render(body,{answered:()=>{LS.answered=true;next.hidden=false;next.focus({preventScroll:true});}});
+  body.append(foot);
+  window.scrollTo(0,0);
+}
+function lessonNext(){
+  if(LS.i>=LS.steps.length-1)return LS.finish(LS);
+  LS.i++;lessonRender();
+}
+function lessonExit(){
+  if(LS&&LS.onExit)LS.onExit(LS);
+  openCat(curCat);
+}
+function lessonResult(lines,again){
+  const dl=el('dl','stats');
+  lines.forEach(([k,v])=>dl.append(el('dt','',k),el('dd','',String(v))));
+  showSheet({title:tx('lr_title'),body:dl,
+    actions:[{label:tx('lr_again'),fn:()=>{closeSheet(true);again();}},{label:tx('lr_to_cat'),cls:'btn ghost',fn:()=>closeSheet()}],
+    onClose:()=>openCat(curCat)});
+}
+const frac=s=>s?s.ok+'/'+s.n:'—';
+const passed=(s,r)=>!!s&&s.n>0&&s.ok/s.n>=r;
+
+/* --- урок про один чай --- */
+function pitchParts(t){
+  const s=[];
+  s.push(tx('pitch_who',{name:t.name,type:t.type,region:t.region})+(t.char?tx('pitch_char',{char:t.char}):'')+'.');
+  if(t.desc.length)s.push(tx('pitch_taste',{list:t.desc.map(cap).join(', ')}));
+  const p=[];
+  if(t.vessels.length)p.push(tx('pp_vessel',{v:t.vessels.join(', ')}));
+  if(okWeight(t))p.push(tx('pp_weight',{v:t.weight}));
+  if(t.temp)p.push(tx('pp_temp',{v:t.temp}));
+  if(t.pn)p.push(tx('pp_pours',{v:t.pn}));
+  if(t.pour)p.push(tx('pp_pour',{v:t.pour}));
+  if(p.length)s.push(tx('pitch_brew',{parts:p.join('; ')}));
+  s.push(tx('pitch_when',{time:t.time})+' '+tx(t.novice?'pitch_novice_yes':'pitch_novice_no'));
+  if(t.comment)s.push(t.comment);
+  return s;
+}
+function teaSteps(t){
+  const S=[];
+  S.push(readStep(tx('page_who'),b=>{
+    const c=el('div','chips big');
+    [t.type,t.region,t.char,t.novice?tx('label_novice'):''].filter(Boolean).forEach(x=>c.append(el('span','chip',x)));
+    b.append(c,el('p','lp',pitchParts(t)[0]));
+  }));
+  if(t.desc.length)S.push(readStep(tx('page_taste'),b=>{
+    const c=el('div','chips big');t.desc.forEach(x=>c.append(el('span','chip',cap(x))));
+    b.append(c,el('p','lp tip',tx('taste_tip')));
+  }));
+  S.push(readStep(tx('page_brew'),b=>{
+    const dl=el('dl','props');
+    [[tx('prop_vessel'),t.vessels.join(', ')],[tx('prop_weight'),t.weight],[tx('prop_temp'),t.temp],[tx('prop_infusions'),t.infusions],[tx('prop_pour'),t.pour]]
+      .forEach(([k,v])=>{if(v)dl.append(el('dt','',k),el('dd','',v));});
+    b.append(dl,el('p','lp tip',tx('brew_tip')));
+  }));
+  S.push(readStep(tx('page_when'),b=>{
+    const dl=el('dl','props');
+    dl.append(el('dt','',tx('prop_time')),el('dd','',t.time||'—'),el('dt','',tx('f_novice')),el('dd','',t.novice?tx('ans_yes'):tx('ans_no')));
+    b.append(dl);
+    if(t.comment)b.append(el('blockquote','quote',t.comment));
+  }));
+  if(t.about)S.push(readStep(tx('page_story'),b=>{b.append(el('p','lp',t.about));}));
+  S.push(readStep(tx('page_pitch'),b=>{
+    pitchParts(t).forEach(x=>b.append(el('p','lp',x)));
+    b.append(el('p','lp tip',tx('pitch_hint')));
+  }));
+  const reads=S.length;
+  const fields=[];
+  if(t.region)fields.push({label:tx('f_region'),opts:mkOpts(t.region,uniq(x=>x.region))});
+  if(t.desc.length)fields.push({label:tx('f_taste'),opts:mkOpts(cap(pick(t.desc)),allDesc().filter(x=>!t.dl.includes(x.toLowerCase())))});
+  if(t.tlo!=null)fields.push({label:tx('prop_temp'),opts:mkOpts(t.temp,uniq(x=>x.tlo!=null?x.temp:null))});
+  if(t.pn)fields.push({label:tx('prop_infusions'),opts:mkOpts(t.pn,[t.pn-3,t.pn-2,t.pn-1,t.pn+1,t.pn+2,t.pn+3].filter(x=>x>=3))});
+  S.push(formStep(fields,'cloze'));
+  const others=groupOf(t.type).filter(x=>x!==t);
+  const qs=[qRegion(t),qTaste(t),pick([qTemp(t),qPours(t)].filter(Boolean))||qPour(t)];
+  let d=null;
+  shuffle(others).some(o=>(d=qDiff(t,o))!==null);
+  qs.push(d||pick([qPour(t),qVessel(t),qTime(t),qNovice(t),qChar(t)].filter(Boolean)));
+  qs.filter(Boolean).forEach(q=>S.push(qStep(q,'quiz')));
+  return{steps:S,reads};
+}
+function startTea(t){
+  const {steps,reads}=teaSteps(t);
+  lessonStart({title:t.name,steps,
+    onExit:L=>{if(L.i>=reads-1){(LP.teas[t.id]=LP.teas[t.id]||{}).r=true;lsave();}},
+    finish:L=>{
+      const p=LP.teas[t.id]||(LP.teas[t.id]={});
+      p.r=true;if(passed(L.sec.cloze,.75))p.c=true;if(passed(L.sec.quiz,.75))p.q=true;lsave();
+      lessonResult([[tx('lr_cloze'),frac(L.sec.cloze)],[tx('lr_quiz'),frac(L.sec.quiz)],[tx('lr_stars'),starStr(tstars(t))]],()=>startTea(t));
+    }});
+}
+
+/* --- огляд категорії --- */
+function startOverview(type){
+  const g=groupOf(type);
+  const cnt=fn=>{const m={};g.forEach(t=>fn(t).forEach(k=>{m[k]=(m[k]||0)+1;}));return Object.entries(m).sort((a,b)=>b[1]-a[1]);};
+  const regs=cnt(t=>t.region?[t.region]:[]),descs=cnt(t=>t.desc.map(cap));
+  const T=g.filter(t=>t.tlo!=null),P=g.filter(t=>t.pn);
+  const nov=g.filter(t=>t.novice).length;
+  const ex=g.filter(t=>t.char==='Екстраверт').length,inn=g.filter(t=>t.char==='Інтроверт').length;
+  const S=[];
+  S.push(readStep(tx('ov_common'),b=>{
+    const ul=el('ul','ovl');
+    ul.append(el('li','',tx('ov_count',{n:g.length})));
+    if(regs.length)ul.append(el('li','',tx('ov_regions',{list:regs.map(x=>x[0]+' ('+x[1]+')').join(', ')})));
+    if(T.length)ul.append(el('li','',tx('ov_temp',{lo:Math.min(...T.map(t=>t.tlo)),hi:Math.max(...T.map(t=>t.thi))})));
+    if(P.length)ul.append(el('li','',tx('ov_pours',{lo:Math.min(...P.map(t=>t.pn)),hi:Math.max(...P.map(t=>t.pn))})));
+    if(descs.length)ul.append(el('li','',tx('ov_taste',{list:descs.slice(0,5).map(x=>x[0]).join(', ')})));
+    ul.append(el('li','',tx('ov_novice',{n:nov,total:g.length})),el('li','',tx('ov_char',{a:inn,b:ex})));
+    b.append(ul);
+  }));
+  S.push(readStep(tx('ov_members'),b=>{
+    const ul=el('ul','ovl');
+    g.forEach(t=>ul.append(el('li','',tx('ov_member',{name:t.name,region:t.region,temp:t.temp||'—',n:t.pn||'—'}))));
+    b.append(ul);
+  }));
+  if(regs.length>1)S.push(qStep({text:tx('oq_region',{type}),opts:mkOpts(regs[0][0],uniq(x=>x.region))},'quiz'));
+  if(descs.length)S.push(qStep({text:tx('oq_taste',{type}),opts:mkOpts(descs[0][0],allDesc().filter(x=>x!==descs[0][0]))},'quiz'));
+  const nPool=[];for(let i=0;i<=g.length;i++)nPool.push(i);
+  S.push(qStep({text:tx('oq_novice',{type}),opts:mkOpts(nov,nPool,Math.min(4,nPool.length))},'quiz'));
+  lessonStart({title:tx('row_overview')+': '+type,steps:S,finish:L=>{
+    cprog(type).intro=true;lsave();
+    lessonResult([[tx('lr_quiz'),frac(L.sec.quiz)]],()=>startOverview(type));
+  }});
+}
+
+/* --- порівняння в групі --- */
+function cmpPage(a,b){
+  return readStep(tx('cmp_title',{a:a.name,b:b.name}),body=>{
+    body.append(el('p','lp tip',tx('cmp_hint')));
+    const yn=t=>t.novice?tx('ans_yes'):tx('ans_no');
+    const rows=[[tx('f_region'),a.region,b.region],[tx('f_char'),a.char||'—',b.char||'—'],[tx('f_tastes'),a.desc.map(cap).join(', ')||'—',b.desc.map(cap).join(', ')||'—'],
+      [tx('prop_temp'),a.temp||'—',b.temp||'—'],[tx('prop_infusions'),a.infusions||'—',b.infusions||'—'],[tx('prop_pour'),a.pour||'—',b.pour||'—'],
+      [tx('prop_vessel'),a.vessels.join(', ')||'—',b.vessels.join(', ')||'—'],[tx('prop_time'),a.time||'—',b.time||'—'],[tx('f_novice'),yn(a),yn(b)]];
+    const g=el('div','cmp');
+    g.append(el('span',''),el('b','ch',a.name),el('b','ch',b.name));
+    rows.forEach(([k,x,y])=>{
+      const dif=x!==y;
+      g.append(el('span','ck',k),el('span','cv'+(dif?' diff':''),x),el('span','cv'+(dif?' diff':''),y));
+    });
+    body.append(g);
+  });
+}
+function startCompare(type){
+  const g=groupOf(type),pairs=[];
+  const all=[];g.forEach((a,i)=>g.slice(i+1).forEach(b=>{if(diffFacts(a,b).length&&diffFacts(b,a).length)all.push([a,b]);}));
+  shuffle(all).slice(0,3).forEach(p=>pairs.push(p));
+  const S=[];
+  pairs.forEach(([a,b])=>{
+    S.push(cmpPage(a,b));
+    const q1=qDiff(a,b),q2=qDiff(b,a);
+    if(q1)S.push(qStep(q1,'quiz'));if(q2)S.push(qStep(q2,'quiz'));
+  });
+  lessonStart({title:tx('row_compare')+': '+type,steps:S,finish:L=>{
+    if(passed(L.sec.quiz,.7)){const c=cprog(type);c.cmp=(c.cmp||0)+1;lsave();}
+    lessonResult([[tx('lr_quiz'),frac(L.sec.quiz)]],()=>startCompare(type));
+  }});
+}
+
+/* --- іспит категорії --- */
+function startExam(type){
+  const g=groupOf(type),N=8,S=[];
+  for(let i=0;i<N;i++){
+    let q=i%2===0?groupGuess(g):null;
+    if(!q){const [a,b]=shuffle(g).slice(0,2);q=qDiff(a,b);}
+    if(!q)q=groupGuess(g)||qRegion(pick(g));
+    S.push(qStep(q,'exam'));
+  }
+  const need=Math.ceil(N*.75);
+  lessonStart({title:tx('row_exam')+': '+type,steps:S,finish:L=>{
+    const e=L.sec.exam||{ok:0,n:N},c=cprog(type);
+    if(e.ok>(c.exam||0)){c.exam=e.ok;c.examN=e.n;}
+    if(e.ok>=need)c.pass=true;
+    lsave();
+    lessonResult([[tx('row_exam'),e.ok+'/'+e.n],[tx('lr_verdict'),e.ok>=need?tx('lr_exam_pass'):tx('lr_exam_fail',{need,n:N})]],()=>startExam(type));
+  }});
+}
+
+/* --- екрани навчання --- */
+function openLearn(){
+  const root=$('#learn-list');root.replaceChildren();
+  $('#learn-known').textContent=tx('learn_known',{n:TEAS.filter(t=>tstars(t)===3).length,total:TEAS.length});
+  typeList().forEach(type=>{
+    const g=groupOf(type),[gl,c]=STYLE[type]||['🍵','#7ba8a0'];
+    const st=g.reduce((a,t)=>a+tstars(t),0),max=g.length*3;
+    const b=el('button','lcat');b.type='button';
+    b.style.setProperty('--tb',rgba(c,.8));b.style.setProperty('--ts',rgba(c,.24));
+    const top=el('div','lc-top');top.append(el('span','g',gl),el('b','',type),el('small','',tx('cat_teas',{n:g.length})));
+    const bar=el('div','bar'),i=el('i');i.style.width=(max?st/max*100:0)+'%';bar.append(i);
+    b.append(top,bar,el('small','',tx('learn_progress',{stars:st,max})));
+    b.onclick=()=>openCat(type);root.append(b);
+  });
+  show('learn');
+}
+function openCat(type){
+  curCat=type;
+  const g=groupOf(type),[gl]=STYLE[type]||['🍵'];
+  $('#cat-title').textContent=gl+' '+type;
+  const root=$('#cat-body');root.replaceChildren();
+  const c=cprog(type),rows=[];
+  rows.push({title:tx('row_overview'),sub:tx('row_overview_sub'),done:!!c.intro,go:()=>startOverview(type)});
+  g.forEach(t=>{const n=tstars(t);rows.push({title:t.name,sub:starStr(n),done:n===3,go:()=>startTea(t)});});
+  if(g.length>=2){
+    rows.push({title:tx('row_compare'),sub:tx('row_compare_sub'),done:(c.cmp||0)>0,go:()=>startCompare(type)});
+    rows.push({title:tx('row_exam'),sub:c.exam!=null?tx('row_exam_best',{n:c.exam,total:c.examN||8}):tx('row_exam_sub'),done:!!c.pass,go:()=>startExam(type)});
+  }
+  const next=rows.find(r=>!r.done);
+  if(next){const b=el('button','btn',tx('cat_continue')+': '+next.title);b.type='button';b.onclick=next.go;b.id='cat-continue';root.append(b);}
+  root.append(el('h3','lhead',tx('cat_steps')));
+  rows.forEach((r,i)=>{
+    const b=el('button','lrow'+(r.done?' done':''));b.type='button';
+    const info=el('div','');info.append(el('b','',r.title),el('small','',r.sub));
+    b.append(el('span','mark',r.done?'✓':String(i+1)),info,el('span','act',r.done?tx('row_repeat'):tx('row_start')));
+    b.onclick=r.go;root.append(b);
+  });
+  if(g.length<2)root.append(el('p','lp tip',tx('cat_single')));
+  show('cat');
+}
+
+/* ---------- події ---------- */
+$('#b-new').onclick=()=>startGame(freshState());
+$('#b-continue').onclick=()=>{const s=loadSave();if(s)startGame(s);};
+$('#b-dex').onclick=openDex;
+$('#b-mini').onclick=openMini;
+$('#b-learn').onclick=openLearn;
+$('#b-learn-back').onclick=renderTitle;
+$('#b-cat-back').onclick=openLearn;
+$('#b-lesson-exit').onclick=lessonExit;
+$('#b-mini-back').onclick=renderTitle;
+$('#b-mg-exit').onclick=openMini;
+$('#b-how').onclick=openHow;
+$('#b-dex-back').onclick=renderTitle;
+$('#b-home').onclick=()=>{if(S&&S.phase!=='over')save();renderTitle();};
+$('#b-next').onclick=onNext;
+$('#b-brew').onclick=openBrew;
+$('#b-again').onclick=()=>startGame(freshState());
+$('#b-over-home').onclick=renderTitle;
+$('#sheet-back').onclick=()=>closeSheet();
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+$('#easy').onchange=e=>{easy=e.target.checked;store.set(EASY,easy);};
+
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+window.__g={get S(){return S;},fits,menuTeas,level,serveTea,nextVisitor,onNext,startGame,freshState,TEAS,makeVisitor,closeSheet,openCategory,openBrew,buildCats,MG:()=>MG,setFast:v=>{mgFast=v;},openMini,mgStart,oddQuestion,guessQuestion,matchBoard,sortStage,LS:()=>LS,LP:()=>LP,openLearn,openCat,startTea,startOverview,startCompare,startExam,groupOf,tstars,lessonNext};
+document.title=tx('title');
+document.querySelectorAll('[data-t]').forEach(e=>{e.textContent=tx(e.dataset.t);});
+document.querySelectorAll('[data-t-aria]').forEach(e=>{e.setAttribute('aria-label',tx(e.dataset.tAria));});
+renderTitle();
+})();
+</script>
+</body>
+</html>
