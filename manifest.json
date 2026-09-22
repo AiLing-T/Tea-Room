@@ -1,0 +1,27 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "TeaRoomUA",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "trua",
+  "start_url": "/",
+  "theme_color": "#0f2529",
+  "icons": [
+    {
+      "src": "https://ailing-t.github.io/Tea-Room/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 192,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": true
+    }
+  ],
+  "description": "An app to learn teas"
+}
